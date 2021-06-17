@@ -1,0 +1,39 @@
+//Laís Saloum Deghaide, nUSP: 11369767
+//Thiago Henrique dos Santos Cardoso, nUSP: 11796594
+
+#include "CREATE_INDEX.h"
+#include "funcao-fornecida.h"
+
+void CREATE_INDEX(char c) {
+
+    // Lê nome do csv que será lido e nome do binário que será criado
+    char nome_bin[15], nome_index[15];
+    scanf("%s", nome_bin);
+    scanf("%s", nome_index);
+
+    // Checa caso de falha na abertura dos arquivos
+    FILE *fp_bin = fopen(nome_bin, "rb");
+    if (fp_bin == NULL){
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }   
+
+    FILE *fp_index = fopen(nome_index, "wb");
+    if (fp_index == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }   
+    
+    // Se for escolhida a opção de criar indice da arvore B para veiculo
+    if(c == '9') {
+
+    }
+
+    else if(c == '10') {
+
+    }
+
+    fclose(fp_bin);
+    fclose(fp_index);
+    binarioNaTela(nome_index);  
+}
