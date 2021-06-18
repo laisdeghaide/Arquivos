@@ -2,6 +2,7 @@
 //Thiago Henrique dos Santos Cardoso, nUSP: 11796594
 
 #include "CREATE_INDEX.h"
+#include "constants.h"
 #include "funcao-fornecida.h"
 
 void CREATE_INDEX(char c) {
@@ -26,7 +27,6 @@ void CREATE_INDEX(char c) {
     
     // Se for escolhida a opção de criar indice da arvore B para veiculo
     if(c == '9') {
-        cria_arvB_veiculo(nome_bin, nome_index);
     }
 
     else if(c == '10') {
