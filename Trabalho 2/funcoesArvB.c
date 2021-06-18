@@ -3,7 +3,7 @@
 
 #include "funcoesArvB.h"
 
-void escreve_cabecalho_indice(FILE *fp_index, cabecalho_arvB cabecalho) {
+void escreve_cabecalho_arvore(FILE *fp_index, cabecalho_arvB cabecalho) {
     fwrite(&cabecalho.status, sizeof(char), 1, fp_index);
     fwrite(&cabecalho.noRaiz, sizeof(int), 1, fp_index);
     fwrite(&cabecalho.RRNproxNo, sizeof(int), 1, fp_index);
@@ -15,7 +15,7 @@ void escreve_cabecalho_indice(FILE *fp_index, cabecalho_arvB cabecalho) {
     fwrite(lixo, sizeof(char), 68, fp_index);
 }
 
-void le_cabecalho_indice(FILE *fp_index, cabecalho_arvB *cabecalho) {
+void le_cabecalho_arvore(FILE *fp_index, cabecalho_arvB *cabecalho) {
     fread(&cabecalho->status,sizeof(char),1,fp_index);
     fread(&cabecalho->noRaiz,sizeof(int),1,fp_index);
     fread(&cabecalho->RRNproxNo, sizeof(int), 1, fp_index);
