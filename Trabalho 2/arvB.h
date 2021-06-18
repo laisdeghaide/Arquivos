@@ -18,11 +18,11 @@ typedef struct {
 // Estrutura dos nós da árvore
 typedef struct {
     char folha;
-    int nroChavesIndexadas;
+    int nroChavesIndexadas; //numeros de chaves presentes do nó (max=4)
     int RRNdoNo;
-    int P[ordem_arvB];
-    int C[ordem_arvB-1];
-    int Pr[ordem_arvB-1];
+    int P[ordem_arvB];  //RRN das subárvores
+    int C[ordem_arvB-1]; // chave de busca dos registros
+    int Pr[ordem_arvB-1]; // byteoffset do registro no arquivo de registros
 } no_arvB;
 
 #endif
