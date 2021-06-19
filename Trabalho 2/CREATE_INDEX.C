@@ -27,10 +27,11 @@ void CREATE_INDEX(char c) {
     
     // Se for escolhida a opção de criar indice da arvore B para veiculo
     if(c == '9') {
+        cria_arvB(fp_bin, fp_index, c);
     }
 
     else if(c == '10') {
-
+        cria_arvB(fp_bin, fp_index, c);
     }
 
     fclose(fp_bin);

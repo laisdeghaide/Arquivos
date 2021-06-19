@@ -16,6 +16,8 @@ void le_no_arvore(FILE *fp_index, no_arvB *no);
 void inicializa_arvB(FILE *fp);
 
 void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo);
-void insere_no_veiculo(FILE *fp_bin, int chave, int RRN);
+void insere_no(FILE *fp_index, int chave, int byteoffset);
+
+void cria_no(FILE *fp_index);
 
 #endif
