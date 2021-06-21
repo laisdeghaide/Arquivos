@@ -64,7 +64,7 @@ void le_no_arvore(FILE *fp, no_arvB *no) {
 
 // Inicializa nó
 void inicializa_no(no_arvB *no) {
-no->folha = -1;
+    no->folha = -1;
     no->nroChavesIndexadas = 0;
 
     for(int i=0; i<ordem_arvB-1; i++) {
