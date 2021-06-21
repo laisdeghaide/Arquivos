@@ -5,6 +5,7 @@
 #define CREATE_TABLE_H
 
 #include "arvB.h"
+#include "funcoesArvB.h"
 
 //Funcao pedida responsável por criar o índice da arvB
 void CREATE_INDEX(char c);
