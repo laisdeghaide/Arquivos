@@ -2,7 +2,6 @@
 //Thiago Henrique dos Santos Cardoso, nUSP: 11796594
 
 #include "CREATE_INDEX.h"
-#include "constants.h"
 #include "funcao-fornecida.h"
 
 void CREATE_INDEX(char c) {

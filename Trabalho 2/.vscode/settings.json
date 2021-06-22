@@ -2,6 +2,7 @@
     "files.associations": {
         "CREATE_INDEX.C": "cpp",
         "recupera_dados.h": "c",
-        "INSERT.C": "cpp"
+        "INSERT.C": "cpp",
+        "funcao-fornecida.h": "c"
     }
 }

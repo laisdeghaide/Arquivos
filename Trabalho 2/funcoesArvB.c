@@ -1,6 +1,7 @@
 //Laís Saloum Deghaide, nUSP: 11369767
 //Thiago Henrique dos Santos Cardoso, nUSP: 11796594
 
+#include "constants.h"
 #include "funcoesArvB.h"
 #include "funcoesLeitura.h"
 
