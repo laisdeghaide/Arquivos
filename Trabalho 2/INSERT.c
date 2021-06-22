@@ -1,11 +1,11 @@
 //Laís Saloum Deghaide, nUSP: 11369767
 //Thiago Henrique dos Santos Cardoso, nUSP: 11796594
 
-#include "RECOVER_DATA.h"
+#include "INSERT.h"
 #include "funcao-fornecida.h"
 #include "constants.h"
 
-void RECOVER_DATA(char c) {
+void INSERT(char c) {
 
     // Lê nome do csv que será lido e nome do binário que será criado
     char nome_bin[15], nome_index[15];
