@@ -3,6 +3,7 @@
 
 #include "RECOVER_DATA.h"
 #include "funcao-fornecida.h"
+#include "constants.h"
 
 void RECOVER_DATA(char c) {
 

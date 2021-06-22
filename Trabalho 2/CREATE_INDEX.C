@@ -3,6 +3,7 @@
 
 #include "CREATE_INDEX.h"
 #include "funcao-fornecida.h"
+#include "constants.h"
 
 void CREATE_INDEX(char c) {
 

@@ -3,6 +3,7 @@
         "CREATE_INDEX.C": "cpp",
         "recupera_dados.h": "c",
         "INSERT.C": "cpp",
-        "funcao-fornecida.h": "c"
+        "funcao-fornecida.h": "c",
+        "funcoesleitura.h": "c"
     }
 }
