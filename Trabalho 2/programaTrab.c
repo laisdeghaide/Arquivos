@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 #include "CREATE_INDEX.h"
+#include "RECOVER_DATA.h"
+#include "INSERT.h"
 
 int main() {
 
@@ -12,8 +14,8 @@ int main() {
     if(c == '9') CREATE_INDEX(c); 
     else if(c == '10') CREATE_INDEX(c);
     
-    else if(c == '11') PREFIXO(c);
-    else if(c == '12') RECUPERA_CODLINHA(c);
+    else if(c == '11') RECOVER_DATA(c);
+    else if(c == '12') RECOVER_DATA(c);
     
     else if(c == '13') INSERT(c);
     else if(c == '14') INSERT(c);

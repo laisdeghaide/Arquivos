@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "CREATE_INDEX.C": "cpp"
+        "CREATE_INDEX.C": "cpp",
+        "recupera_dados.h": "c",
+        "INSERT.C": "cpp"
     }
 }

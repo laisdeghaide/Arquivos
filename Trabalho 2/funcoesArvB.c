@@ -4,6 +4,7 @@
 #include "funcoesArvB.h"
 #include "funcoesLeitura.h"
 
+// Função que nos auxilia na escrita de cada um dos campos do cabecalho da arvore, alocando lixo no fim
 void escreve_cabecalho_arvore(FILE *fp, cabecalho_arvB cabecalho) {
     fseek(fp, 0, SEEK_SET);
     fwrite(&cabecalho.status, sizeof(char), 1, fp);
@@ -17,6 +18,7 @@ void escreve_cabecalho_arvore(FILE *fp, cabecalho_arvB cabecalho) {
     fwrite(lixo, sizeof(char), 68, fp);
 }
 
+// Função responsável pela leitura dos campos do cabecalho da arvore
 void le_cabecalho_arvore(FILE *fp, cabecalho_arvB *cabecalho) {
     fseek(fp, 0, SEEK_SET);
     fread(&cabecalho->status,sizeof(char),1,fp);
@@ -27,6 +29,7 @@ void le_cabecalho_arvore(FILE *fp, cabecalho_arvB *cabecalho) {
     fread(lixo, sizeof(char), 68, fp);
 }
 
+// Função responsável pela escrita das paginas de disco
 void escreve_no_arvore(FILE *fp, no_arvB no) {
     fwrite(&no.folha, sizeof(char), 1, fp);
     fwrite(&no.nroChavesIndexadas, sizeof(int), 1, fp);
@@ -42,6 +45,7 @@ void escreve_no_arvore(FILE *fp, no_arvB no) {
     }
 }
 
+// Função responsável por ler página de disco
 void le_no_arvore(FILE *fp, no_arvB *no) {
     fread(&no->folha, sizeof(char), 1, fp);
     fread(&no->nroChavesIndexadas, sizeof(int), 1, fp);
@@ -57,7 +61,8 @@ void le_no_arvore(FILE *fp, no_arvB *no) {
     }
 }
 
-// Inicializa nó
+// Função que inicializa pagina de disco
+// Inicialmente é marcado como folha, e todos os outros campos como nulos (-1)
 void inicializa_no(no_arvB *no) {
     no->folha = '1';
     no->nroChavesIndexadas = 0;
@@ -72,6 +77,7 @@ void inicializa_no(no_arvB *no) {
 }
 
 // Função que cria nó da árvore
+// Responsável por preencher as paginas de disco 
 no_arvB *cria_no(FILE *fp_index) {
     cabecalho_arvB *cabecalho = (cabecalho_arvB*)malloc(sizeof(cabecalho_arvB));
     le_cabecalho_arvore(fp_index, cabecalho);
@@ -89,6 +95,7 @@ no_arvB *cria_no(FILE *fp_index) {
 }
 
 // Função que inicializa a árvore
+// Inicialmente não tem nó raiz e nem proxNo
 void inicializa_arvB(FILE *fp) {
     cabecalho_arvB cabecalho;
 
@@ -99,7 +106,10 @@ void inicializa_arvB(FILE *fp) {
     escreve_cabecalho_arvore(fp, cabecalho);
 }
 
-// Função que cria indice para arvore
+// Função que cria indice para árvore
+// Recebe como parametro:
+// os ponteiros fp_bin (ponteiro do arquivo de registros), fp_index (ponteiro da árvore)
+// e tipo (se linha ou veiculo)
 void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
 
     // Inicializando a arvore
@@ -117,12 +127,19 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
         
         // le cada um dos registros de veiculo e insere na arvore
         for(int i=0; i<qtd_registros; i++) {
-            
+
+            // Lê o byteoffset do registro 
             int offset = ftell(fp_bin);
+
+            // Lê os dados do registro
             recebe_dados_veiculo(fp_bin, dados); 
 
+            // Converte a chave para int
             int chave = convertePrefixo(dados->prefixo);
-            insere_no(fp_index, chave, offset);
+
+            //Se o registro não estiver marcado como removido, inserimos
+            if(dados->removido != '0') 
+                insere_no(fp_index, chave, offset);
         }
 
         free(cabecalho);
@@ -141,9 +158,15 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
         // le cada um dos registros de veiculo e insere na arvore
         for(int i=0; i<qtd_registros; i++) {
             
+            // Lê o byteoffset do registro
             int offset = ftell(fp_bin);
+
+            // Lê os dados do registro
             recebe_dados_linha(fp_bin, dados); 
-            insere_no(fp_index, dados->codLinha, offset);
+
+            // Se o registro não estiver marcado como removido, inserimos
+            if(dados->removido != '0') 
+                insere_no(fp_index, dados->codLinha, offset);
         }
 
         free(cabecalho);
