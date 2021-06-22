@@ -26,7 +26,10 @@ void RECOVER_DATA(char c) {
     }   
     
     if(c == '11') {
+        char prefixo[6];
+        int valor;
 
+        scanf("%s %d", prefixo, &valor);
     }
 
     else if(c == '12') {
