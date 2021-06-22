@@ -24,9 +24,6 @@ void le_cabecalho_arvore(FILE *fp, cabecalho_arvB *cabecalho) {
     fread(&cabecalho->RRNproxNo, sizeof(int), 1, fp);
 
     char lixo[69];
-    for(int i=0; i<68; i++) {
-        lixo[i] = '@';
-    }
     fread(lixo, sizeof(char), 68, fp);
 }
 
@@ -46,7 +43,6 @@ void escreve_no_arvore(FILE *fp, no_arvB no) {
 }
 
 void le_no_arvore(FILE *fp, no_arvB *no) {
-
     fread(&no->folha, sizeof(char), 1, fp);
     fread(&no->nroChavesIndexadas, sizeof(int), 1, fp);
     fread(&no->RRNdoNo, sizeof(int), 1, fp);
@@ -61,10 +57,9 @@ void le_no_arvore(FILE *fp, no_arvB *no) {
     }
 }
 
-
 // Inicializa nó
 void inicializa_no(no_arvB *no) {
-    no->folha = -1;
+    no->folha = '1';
     no->nroChavesIndexadas = 0;
 
     for(int i=0; i<ordem_arvB-1; i++) {
@@ -77,7 +72,7 @@ void inicializa_no(no_arvB *no) {
 }
 
 // Função que cria nó da árvore
-void cria_no(FILE *fp_index) {
+no_arvB *cria_no(FILE *fp_index) {
     cabecalho_arvB *cabecalho = (cabecalho_arvB*)malloc(sizeof(cabecalho_arvB));
     le_cabecalho_arvore(fp_index, cabecalho);
 
@@ -89,6 +84,8 @@ void cria_no(FILE *fp_index) {
 
     escreve_no_arvore(fp_index, *no);
     cabecalho->RRNproxNo++;
+
+    return no;
 }
 
 // Função que inicializa a árvore
@@ -154,6 +151,79 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
     }
 }
 
+
+int busca(FILE *fp_index, int RRN, int chave, int *RRN_encontrado) {
+    if(RRN == -1)
+        return 0;
+    
+    no_arvB *no = (no_arvB*)malloc(sizeof(no_arvB));
+    le_no_arvore(fp_index, no);
+
+    for(int i=0; i<ordem_arvB-1; i++) {
+        if(chave == no->C[i]) {
+            *RRN_encontrado = no->Pr[i];
+            printf("ERRO. Chave duplicada.");
+            break;
+        }
+    }
+
+    if(*RRN_encontrado != -1) {
+        free(no);
+        return 1;
+    }
+
+    for(int i=0; i<ordem_arvB-1; i++) {
+        if(i == ordem_arvB-1) {
+            RRN = no->P[ordem_arvB-1];
+        }
+
+        else if(chave < no->C[i]) {
+            RRN = no->P[i];
+            break;
+        }
+    }
+
+    free(no);
+    return busca(fp_index, RRN, chave, RRN_encontrado);
+}
+
+
 void insere_no(FILE *fp_index, int chave, int byteoffset) {
+    
+    cabecalho_arvB *cabecalho = (cabecalho_arvB*)malloc(sizeof(cabecalho_arvB));
+    le_cabecalho_arvore(fp_index, cabecalho);
+
+    no_arvB *no = (no_arvB*)malloc(sizeof(no_arvB));
+
+    // Se ainda nao existe no, cria nó raiz
+    if(cabecalho->noRaiz == -1) {
+        no = cria_no(fp_index);
+        cabecalho->noRaiz = 1;
+    }
+
+    // insere normal
+    if(no->nroChavesIndexadas < ordem_arvB-1) {
+        insere_no(fp_index, );
+    }
+
+    // se não, faz split, acha o promote
+    //insert(CURRENT_RRN, KEY, PROMO_KEY, PROMO_R_CHILD)
 
 }
+
+
+void insert(int current_RRN, int RRN, int key, int promo_key, int promo_r_child, FILE *fp_index) {
+    if(current_RRN == -1) {
+        int promo_key = key;
+        int promo_r_child = -1;
+        int promo_RRN = RRN;
+
+        return -1;
+    }
+
+    no_arvB *no = (no_arvB*)malloc(sizeof(no_arvB));
+    le_no_arvore(fp_index, no);
+
+
+}
+
