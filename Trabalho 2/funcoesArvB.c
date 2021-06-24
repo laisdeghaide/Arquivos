@@ -3,6 +3,7 @@
 
 #include "funcoesArvB.h"
 #include "funcoesLeitura.h"
+#include "funcoesEscrita.h"
 
 // Função que nos auxilia na escrita de cada um dos campos do cabecalho da arvore, alocando lixo no fim
 void escreve_cabecalho_arvore(FILE *fp, cabecalho_arvB cabecalho) {

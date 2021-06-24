@@ -38,7 +38,7 @@ void RECOVER_DATA(char c) {
 
     else if(c == '12') {
         char codLinha[20];
-
+        int valor;
         scanf("%s %d", codLinha, &valor);
 
         busca_dados_indice(fp_bin, fp_index, valor, c);

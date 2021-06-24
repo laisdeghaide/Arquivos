@@ -19,7 +19,8 @@ void inicializa_no(no_arvB *no);
 void inicializa_arvB(FILE *fp);
 void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo);
 
-int busca(FILE *fp_index, int RRN, int chave, int *RRN_encontrado);
+int busca(int RRN, int *byteoffset_encontrado, int chave, FILE *fp_index);
+void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo);
 
 void insere_no(FILE *fp_index, int chave, int byteoffset);
 void insert(int current_RRN, int RRN, int key, int promo_key, int promo_r_child, FILE *fp_index);
