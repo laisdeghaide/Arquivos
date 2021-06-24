@@ -175,31 +175,42 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
 }
 
 
-int busca(FILE *fp_index, int RRN, int chave, int *RRN_encontrado) {
+int busca(int RRN, int *byteoffset_encontrado, int chave, FILE *fp_index) {
+    // Chave de busca não encontrada
     if(RRN == -1)
         return 0;
     
+    // posiciona o ponteiro na pagina de disco desejada
+    fseek(fp_index, (RRN+1)*77, SEEK_SET);
+
+    // lê a pagina de disco
     no_arvB *no = (no_arvB*)malloc(sizeof(no_arvB));
     le_no_arvore(fp_index, no);
 
+    // pesquisa a página, procurando a chave de busca
     for(int i=0; i<ordem_arvB-1; i++) {
         if(chave == no->C[i]) {
-            *RRN_encontrado = no->Pr[i];
-            printf("ERRO. Chave duplicada.");
+            *byteoffset_encontrado = no->Pr[i];
             break;
         }
     }
 
-    if(*RRN_encontrado != -1) {
+    // Se a chave existe, retorna 1 (== found)
+    if(*byteoffset_encontrado != -1) {
         free(no);
         return 1;
     }
 
+    // Se não, acha o próximo RRN para continuar a pesquisa
     for(int i=0; i<ordem_arvB-1; i++) {
+
+        // Se chegou no penúltimo RRN, significa que até aqui não encontrou, 
+        // então o RRN vai ser o último RRN presente na árvore
         if(i == ordem_arvB-1) {
             RRN = no->P[ordem_arvB-1];
         }
 
+        // Se não, o RRN vai ser o próximo
         else if(chave < no->C[i]) {
             RRN = no->P[i];
             break;
@@ -207,9 +218,40 @@ int busca(FILE *fp_index, int RRN, int chave, int *RRN_encontrado) {
     }
 
     free(no);
-    return busca(fp_index, RRN, chave, RRN_encontrado);
+    return busca(RRN, byteoffset_encontrado, chave, fp_index);
 }
 
+
+void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
+    cabecalho_arvB *cabecalho = (cabecalho_arvB*)malloc(sizeof(cabecalho_arvB));
+    le_cabecalho_arvore(fp_index, cabecalho);
+
+    int byteoffset_encontrado = busca(cabecalho->noRaiz, 0, valor, fp_index);
+
+    // Se o registro existe
+    if(byteoffset_encontrado != 0) {
+
+        if(tipo == 11) {
+            fseek(fp_bin, 175*(byteoffset_encontrado+1), SEEK_SET);
+            dados_veiculo *dados = (dados_veiculo*)malloc(sizeof(dados_veiculo));
+            cabecalho_veiculo *cabecalho_veiculo = (cabecalho_veiculo*)malloc(sizeof(cabecalho_veiculo));
+            recebe_dados_veiculos(fp_bin, dados);
+            
+            printa_veiculo(dados, cabecalho_veiculo);
+        }
+
+        else if(tipo == 12) {
+            fseek(fp_bin, 83*(byteoffset_encontrado+1), SEEK_SET); // CHECAR TAMANHO DO CABECALHO DE LINHA
+            dados_linha *dados = (dados_veiculo*)malloc(sizeof(dados_linha));
+            cabecalho_linha *cabecalho_linha = (cabecalho_linha*)malloc(sizeof(cabecalho));
+            recebe_dados_linha(fp_bin, dados);
+            printa_linha(dados, cabecalho);
+        }
+    }
+    else {
+         printf("Registro inexistente.\n");
+    }
+}
 
 void insere_no(FILE *fp_index, int chave, int byteoffset) {
     

@@ -25,15 +25,23 @@ void RECOVER_DATA(char c) {
         return;
     }   
     
+    int valor;
     if(c == '11') {
-        char prefixo[6];
-        int valor;
+        char prefixo[20];
+        char valor[6];
+        scanf("%s %s", prefixo, valor);
 
-        scanf("%s %d", prefixo, &valor);
+        int valor_chave = convertePrefixo(valor);
+
+        busca_dados_indice(fp_bin, fp_index, valor_chave, c);
     }
 
     else if(c == '12') {
+        char codLinha[20];
 
+        scanf("%s %d", codLinha, &valor);
+
+        busca_dados_indice(fp_bin, fp_index, valor, c);
     }
 
     fclose(fp_bin);
