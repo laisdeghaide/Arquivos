@@ -2,7 +2,7 @@
 //Thiago Henrique dos Santos Cardoso, nUSP: 11796594
 
 #include "funcoesEscrita.h"
-#include "funcao-fornecida.h"
+#include "funcoesFornecidas.h"
 
 // Funcao responsavel pela escrita do cabecalho do veiculo no arquivo binário
 void escreve_cabecalho_veiculo(FILE *fp_bin, cabecalho_veiculo cabecalho){

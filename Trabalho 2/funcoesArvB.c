@@ -4,6 +4,7 @@
 #include "funcoesArvB.h"
 #include "funcoesLeitura.h"
 #include "funcoesEscrita.h"
+#include "funcoesFornecidas.h"
 
 // Função que nos auxilia na escrita de cada um dos campos do cabecalho da arvore, alocando lixo no fim
 void escreve_cabecalho_arvore(FILE *fp, cabecalho_arvB cabecalho) {
@@ -140,7 +141,8 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
 
             //Se o registro não estiver marcado como removido, inserimos
             if(dados->removido != '0') 
-                insere_no(fp_index, chave, offset);
+                printf("OK");
+                //insere_no(fp_index, chave, offset);
         }
 
         free(cabecalho);
@@ -167,7 +169,8 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
 
             // Se o registro não estiver marcado como removido, inserimos
             if(dados->removido != '0') 
-                insere_no(fp_index, dados->codLinha, offset);
+                printf("OK");
+                //insere_no(fp_index, dados->codLinha, offset);
         }
 
         free(cabecalho);
@@ -175,8 +178,9 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
     }
 }
 
-
+// Função recursiva da busca
 int busca(int RRN, int *byteoffset_encontrado, int chave, FILE *fp_index) {
+
     // Chave de busca não encontrada
     if(RRN == -1)
         return 0;
@@ -217,44 +221,60 @@ int busca(int RRN, int *byteoffset_encontrado, int chave, FILE *fp_index) {
             break;
         }
     }
+    printf("OI");
 
     free(no);
     return busca(RRN, byteoffset_encontrado, chave, fp_index);
 }
 
 
+// Função que encontra o registro que contém a chave (valor) passada
 void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
     cabecalho_arvB *cabecalho = (cabecalho_arvB*)malloc(sizeof(cabecalho_arvB));
     le_cabecalho_arvore(fp_index, cabecalho);
 
     int byteoffset_encontrado = busca(cabecalho->noRaiz, 0, valor, fp_index);
+    printf("TESTE");
 
     // Se o registro existe
     if(byteoffset_encontrado != 0) {
 
+        // Se tipo for veiculo 
         if(tipo == 11) {
+
+            // Então posiciona o ponteiro no registro que possui a chave encontrada
+            // Aloca espaço pro cabecalho e para os dados do veiculo
+            // Lê os valores do registro e printa na tela
             fseek(fp_bin, 175*(byteoffset_encontrado+1), SEEK_SET);
             dados_veiculo *dados = (dados_veiculo*)malloc(sizeof(dados_veiculo));
             cabecalho_veiculo *cabecalho_v = (cabecalho_veiculo*) malloc(sizeof(cabecalho_veiculo));
-            recebe_dados_veiculos(fp_bin, dados);
-            
+            recebe_dados_veiculo(fp_bin, dados);
             printa_veiculo(dados, cabecalho_v);
         }
 
+        // Se tipo for linha
         else if(tipo == 12) {
+
+            // Então posiciona o ponteiro no registro que possui a chave encontrada
+            // Aloca espaço pro cabecalho e para os dados do veiculo
+            // Lê os valores do registro e printa na tela
             fseek(fp_bin, 83*(byteoffset_encontrado+1), SEEK_SET); // CHECAR TAMANHO DO CABECALHO DE LINHA
-            dados_linha *dados = (dados_veiculo*)malloc(sizeof(dados_linha));
+            dados_linha *dados = (dados_linha*)malloc(sizeof(dados_linha));
             cabecalho_linha *cabecalho_l = (cabecalho_linha*)malloc(sizeof(cabecalho));
             recebe_dados_linha(fp_bin, dados);
+
             printa_linha(dados, cabecalho_l);
         }
     }
+
+    // Se o byteoffset não foi encontrado, printa "registro inexistente"
     else {
          printf("Registro inexistente.\n");
     }
 }
 
-void insere_no(FILE *fp_index, int chave, int byteoffset) {
+
+/*void insere_no(FILE *fp_index, int chave, int byteoffset) {
     
     cabecalho_arvB *cabecalho = (cabecalho_arvB*)malloc(sizeof(cabecalho_arvB));
     le_cabecalho_arvore(fp_index, cabecalho);
@@ -271,10 +291,6 @@ void insere_no(FILE *fp_index, int chave, int byteoffset) {
     if(no->nroChavesIndexadas < ordem_arvB-1) {
         insere_no(fp_index, );
     }
-
-    // se não, faz split, acha o promote
-    //insert(CURRENT_RRN, KEY, PROMO_KEY, PROMO_R_CHILD)
-
 }
 
 
@@ -289,7 +305,5 @@ void insert(int current_RRN, int RRN, int key, int promo_key, int promo_r_child,
 
     no_arvB *no = (no_arvB*)malloc(sizeof(no_arvB));
     le_no_arvore(fp_index, no);
-
-
 }
-
+*/

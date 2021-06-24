@@ -8,17 +8,17 @@
 
 int main() {
 
-    char c;
-    scanf("%c", &c);
+    int c;
+    scanf("%d", &c);
 
-    if(c == '9') CREATE_INDEX(c); 
-    else if(c == '10') CREATE_INDEX(c);
+    if(c == 9) CREATE_INDEX(c); 
+    else if(c == 10) CREATE_INDEX(c);
     
-    else if(c == '11') RECOVER_DATA(c);
-    else if(c == '12') RECOVER_DATA(c);
+    else if(c == 11) RECOVER_DATA(c);
+    else if(c == 12) RECOVER_DATA(c);
     
-    else if(c == '13') INSERT(c);
-    else if(c == '14') INSERT(c);
+    else if(c == 13) INSERT(c);
+    else if(c == 14) INSERT(c);
 
     return 0;
 }

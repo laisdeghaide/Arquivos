@@ -2,15 +2,15 @@
 //Thiago Henrique dos Santos Cardoso, nUSP: 11796594
 
 #include "CREATE_INDEX.h"
-#include "funcao-fornecida.h"
+#include "funcoesFornecidas.h"
 #include "constants.h"
 
-void CREATE_INDEX(char c) {
+void CREATE_INDEX(int c) {
 
     // Lê nome do csv que será lido e nome do binário que será criado
-    char nome_bin[15], nome_index[15];
-    scanf("%s", nome_bin);
-    scanf("%s", nome_index);
+    char nome_bin[30], nome_index[30];
+    scanf(" %s", nome_bin);
+    scanf(" %s", nome_index);
 
     // Checa caso de falha na abertura dos arquivos
     FILE *fp_bin = fopen(nome_bin, "rb");

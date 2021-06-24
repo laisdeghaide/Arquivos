@@ -8,6 +8,6 @@
 #include "funcoesArvB.h"
 
 //Funcao pedida responsável por criar o índice da arvB
-void CREATE_INDEX(char c);
+void CREATE_INDEX(int c);
 
 #endif
