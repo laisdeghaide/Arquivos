@@ -235,18 +235,18 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
         if(tipo == 11) {
             fseek(fp_bin, 175*(byteoffset_encontrado+1), SEEK_SET);
             dados_veiculo *dados = (dados_veiculo*)malloc(sizeof(dados_veiculo));
-            cabecalho_veiculo *cabecalho_veiculo = (cabecalho_veiculo*)malloc(sizeof(cabecalho_veiculo));
+            cabecalho_veiculo *cabecalho_v = (cabecalho_veiculo*) malloc(sizeof(cabecalho_veiculo));
             recebe_dados_veiculos(fp_bin, dados);
             
-            printa_veiculo(dados, cabecalho_veiculo);
+            printa_veiculo(dados, cabecalho_v);
         }
 
         else if(tipo == 12) {
             fseek(fp_bin, 83*(byteoffset_encontrado+1), SEEK_SET); // CHECAR TAMANHO DO CABECALHO DE LINHA
             dados_linha *dados = (dados_veiculo*)malloc(sizeof(dados_linha));
-            cabecalho_linha *cabecalho_linha = (cabecalho_linha*)malloc(sizeof(cabecalho));
+            cabecalho_linha *cabecalho_l = (cabecalho_linha*)malloc(sizeof(cabecalho));
             recebe_dados_linha(fp_bin, dados);
-            printa_linha(dados, cabecalho);
+            printa_linha(dados, cabecalho_l);
         }
     }
     else {
