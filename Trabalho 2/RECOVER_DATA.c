@@ -26,7 +26,7 @@ void RECOVER_DATA(int c) {
     }   
     
     if(c == 11) {
-        char prefixo[30], valor[30];
+        char prefixo[8], valor[15];
         scanf("%s", prefixo);
         scan_quote_string(valor);
         int valor_chave = convertePrefixo(valor);
@@ -34,10 +34,10 @@ void RECOVER_DATA(int c) {
     }
 
     else if(c == 12) {
-        char codLinha[20];
+        char codLinha[10];
         int valor;
-        scanf("%s %d", codLinha, &valor);
-
+        scanf("%s", codLinha);
+        scanf("%d", &valor);
         busca_dados_indice(fp_bin, fp_index, valor, c);
     }
 

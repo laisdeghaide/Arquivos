@@ -6,8 +6,6 @@
 #include "funcoesEscrita.h"
 #include "funcoesFornecidas.h"
 
-/* DUVIDAADASDASDAS Linhas: 68 - 99 - 205 - 230 - 249 - 253 - 266 - 270*/
-
 // Função que nos auxilia na escrita de cada um dos campos do cabecalho da arvore, alocando lixo no fim
 void escreve_cabecalho_arvore(FILE *fp, cabecalho_arvB *cabecalho) {
     fseek(fp, 0, SEEK_SET);
@@ -160,6 +158,8 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
 // Função recursiva da busca
 int busca(int RRN, int *byteoffset, int *RRN_encontrado, int chave, FILE *fp_index) {
 
+   // printf("RRN ATUAL: %d\n", RRN);
+
     // Chave de busca não encontrada / Caso Base
     if(RRN == -1) return 0;
     
@@ -168,6 +168,7 @@ int busca(int RRN, int *byteoffset, int *RRN_encontrado, int chave, FILE *fp_ind
     no_arvB *no = (no_arvB*) malloc(sizeof(no_arvB));
     le_no_arvore(fp_index, no);
 
+   // printf("C[0] = %d, C[1] = %d, C[2] = %d, C[3] = %d\n", no->C[0],no->C[1],no->C[2],no->C[3]);
 
     // Pesquisa na página, procurando a chave de busca
     for(int i = 0; i < ordem_arvB-1; i++) {
@@ -176,6 +177,7 @@ int busca(int RRN, int *byteoffset, int *RRN_encontrado, int chave, FILE *fp_ind
         if(chave == no->C[i]) {
             *byteoffset = no->Pr[i];
             free(no);
+           // printf("BYTEOFFSET: %d\n\n", *byteoffset);
             return 1;
         }
 
@@ -206,14 +208,12 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
         // Se tipo for veiculo 
         if(tipo == 11) {
             
-            // Então posiciona o ponteiro no registro que possui a chave encontrada
-            fseek(fp_bin, byteoffset, SEEK_SET);
-
-            // Aloca espaço pro cabecalho e para os dados do veiculo
-            // Lê cabecalho
-            dados_veiculo *dados = (dados_veiculo*)malloc(sizeof(dados_veiculo));
             cabecalho_veiculo *cabecalho_v = (cabecalho_veiculo*) malloc(sizeof(cabecalho_veiculo));
             le_cabecalho_veiculo(fp_bin, cabecalho_v);
+
+            // Posiciona o ponteiro no registro que possui a chave encontrada
+            fseek(fp_bin, byteoffset+5, SEEK_SET);
+            dados_veiculo *dados = (dados_veiculo*) malloc(sizeof(dados_veiculo));
 
             // Lê os valores do registro e printa na tela
             recebe_dados_veiculo(fp_bin, dados);
@@ -231,14 +231,26 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
         // Se tipo for linha
         else if(tipo == 12) {
 
-            // Então posiciona o ponteiro no registro que possui a chave encontrada
-            fseek(fp_bin, byteoffset, SEEK_SET);
-
-            // Aloca espaço pro cabecalho e para os dados do veiculo
-            dados_linha *dados = (dados_linha*)malloc(sizeof(dados_linha));
             cabecalho_linha *cabecalho_l = (cabecalho_linha*)malloc(sizeof(cabecalho));
             le_cabecalho_linha(fp_bin, cabecalho_l);
 
+               for(int i = 0; i < 15; i++) printf("%c", cabecalho_l->descreveCodigo[i]);
+                printf("\n");
+
+                for(int i = 0; i < 13; i++) printf("%c", cabecalho_l->descreveNome[i]);
+                printf("\n");
+
+                for(int i = 0; i < 24; i++) printf("%c", cabecalho_l->descreveCor[i]);
+                printf("\n");
+
+                for(int i = 0; i < 13; i++) printf("%c", cabecalho_l->descreveCartao[i]); \
+                                printf("\n\n");
+
+
+            // Então posiciona o ponteiro no registro que possui a chave encontrada
+            fseek(fp_bin, byteoffset+5, SEEK_SET);
+            dados_linha *dados = (dados_linha*) malloc(sizeof(dados_linha));
+        
             // Lê os valores do registro e printa na tela
             recebe_dados_linha(fp_bin, dados);
             printa_linha(dados, cabecalho_l);
@@ -254,9 +266,7 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
     }
 
     // Se o byteoffset não foi encontrado, printa "registro inexistente"
-    else {
-         printf("Registro inexistente.\n");
-    }
+    else printf("Registro inexistente.\n");
     
     free(cabecalho);
 }
