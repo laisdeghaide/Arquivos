@@ -9,8 +9,8 @@ void RECOVER_DATA(int c) {
 
     // Lê nome do csv que será lido e nome do binário que será criado
     char nome_bin[30], nome_index[30];
-    scanf(" %s", nome_bin);
-    scanf(" %s", nome_index);
+    scanf("%s", nome_bin);
+    scanf("%s", nome_index);
 
     // Checa caso de falha na abertura dos arquivos
     FILE *fp_bin = fopen(nome_bin, "rb");
@@ -25,14 +25,14 @@ void RECOVER_DATA(int c) {
         return;
     }   
     
-    int valor;
     if(c == 11) {
-        char prefixo[20];
-        char valor[6];
-        scanf("%s %s", prefixo, valor);
+        char prefixo[30], valor[30];
+        scanf("%s", prefixo);
+        scan_quote_string(valor);
 
+        printf("chave buscada: %s", valor);
         int valor_chave = convertePrefixo(valor);
-
+        printf(" = %d\n", valor_chave);
         busca_dados_indice(fp_bin, fp_index, valor_chave, c);
     }
 
