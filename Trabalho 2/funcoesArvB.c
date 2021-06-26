@@ -40,13 +40,12 @@ void escreve_no_arvore(FILE *fp, no_arvB no) {
     fwrite(&no.RRNdoNo, sizeof(int), 1, fp);
 
     for(int i=0; i<ordem_arvB-1; i++) {
+        fwrite(&no.P[i], sizeof(int), 1, fp);
         fwrite(&no.C[i], sizeof(int), 1, fp);
-        fwrite(&no.Pr[i], sizeof(int), 1, fp);
+        fwrite(&no.Pr[i], sizeof(long long), 1, fp);
     }
 
-    for(int i=0; i<ordem_arvB; i++) {
-        fwrite(&no.P[i], sizeof(int), 1, fp);
-    }
+    fwrite(&no.P[ordem_arvB-1], sizeof(int), 1, fp);
 }
 
 // Função responsável por ler página de disco
@@ -56,13 +55,12 @@ void le_no_arvore(FILE *fp, no_arvB *no) {
     fread(&no->RRNdoNo, sizeof(int), 1, fp);
 
     for(int i=0; i<ordem_arvB-1; i++) {
+        fread(&no->P[i], sizeof(int), 1, fp);
         fread(&no->C[i], sizeof(int), 1, fp);
-        fread(&no->Pr[i], sizeof(int), 1, fp);
+        fread(&no->Pr[i], sizeof(long long), 1, fp);
     }
 
-    for(int i=0; i<ordem_arvB; i++) {
-        fread(&no->P[i], sizeof(int), 1, fp);
-    }
+    fread(&no->P[ordem_arvB-1], sizeof(int), 1, fp);
 }
 
 // Função que cria nó da árvore
@@ -158,21 +156,9 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
     }
 }
 
-/*
-
-LEIA AQUI :
-
-Não sei se entendi direito a busca, porque as chaves dos nós estão completamente desordenadas (rode programa com caso 5.in)
-Também não sei se a conversão feita está correta... TOMAR NO CU DESSA PORRA DE MATERIA
-Enfim, não entendi direito as coisas.
-
-*/
 
 // Função recursiva da busca
-int busca(int RRN, int *byteoffset, int *RRN_anterior, int chave, FILE *fp_index) {
-
-    // Armazeno o RRN da página de disco anterior a atual
-    *RRN_anterior = RRN;
+int busca(int RRN, int *byteoffset, int *RRN_encontrado, int chave, FILE *fp_index) {
 
     // Chave de busca não encontrada / Caso Base
     if(RRN == -1) return 0;
@@ -184,6 +170,7 @@ int busca(int RRN, int *byteoffset, int *RRN_anterior, int chave, FILE *fp_index
 
     // Printa as chaves da página para fins de debug
     printf("C[0] = %d, C[1] = %d, C[2] = %d, C[3] = %d\n", no->C[0],no->C[1],no->C[2],no->C[3]);
+    printf("\nRRNs = %d\n", RRN);
 
     // Pesquisa na página, procurando a chave de busca
     for(int i = 0; i < ordem_arvB-1; i++) {
@@ -191,6 +178,7 @@ int busca(int RRN, int *byteoffset, int *RRN_anterior, int chave, FILE *fp_index
         // Se encontrou, então armazenamos seu byteoffset e saímos
         if(chave == no->C[i]) {
             *byteoffset = no->Pr[i];
+            *RRN_encontrado = RRN;
             free(no);
             return 1;
         }
@@ -209,11 +197,10 @@ int busca(int RRN, int *byteoffset, int *RRN_anterior, int chave, FILE *fp_index
         if(i == ordem_arvB-2) {
             RRN = no->P[ordem_arvB-1];
         }
-
     }
 
     free(no);
-    return busca(RRN, byteoffset, RRN_anterior, chave, fp_index);
+    return busca(RRN, byteoffset, RRN_encontrado, chave, fp_index);
 }
 
 // Função que encontra o registro que contém a chave (valor) passada
@@ -230,15 +217,15 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
 
         // Se tipo for veiculo 
         if(tipo == 11) {
-
-            /* DUVIDA: Por que 175? Nao seria fseek pro offset direto? */
+            
             // Então posiciona o ponteiro no registro que possui a chave encontrada
             fseek(fp_bin, byteoffset, SEEK_SET);
 
-            /* DUVIDA: Falta ler o cabecalho do veiculo, nao? */
             // Aloca espaço pro cabecalho e para os dados do veiculo
+            // Lê cabecalho
             dados_veiculo *dados = (dados_veiculo*)malloc(sizeof(dados_veiculo));
             cabecalho_veiculo *cabecalho_v = (cabecalho_veiculo*) malloc(sizeof(cabecalho_veiculo));
+            le_cabecalho_veiculo(fp_bin, cabecalho_v);
 
             // Lê os valores do registro e printa na tela
             recebe_dados_veiculo(fp_bin, dados);
@@ -248,14 +235,13 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
         // Se tipo for linha
         else if(tipo == 12) {
 
-            /* DUVIDA: Por que 83? Nao seria fseek pro offset direto? */
             // Então posiciona o ponteiro no registro que possui a chave encontrada
-            fseek(fp_bin, 83*(byteoffset+1), SEEK_SET); // CHECAR TAMANHO DO CABECALHO DE LINHA
+            fseek(fp_bin, byteoffset, SEEK_SET);
 
-            /* DUVIDA: Falta ler o cabecalho da linha, nao? */
             // Aloca espaço pro cabecalho e para os dados do veiculo
             dados_linha *dados = (dados_linha*)malloc(sizeof(dados_linha));
             cabecalho_linha *cabecalho_l = (cabecalho_linha*)malloc(sizeof(cabecalho));
+            le_cabecalho_linha(fp_bin, cabecalho_l);
 
             // Lê os valores do registro e printa na tela
             recebe_dados_linha(fp_bin, dados);

@@ -22,7 +22,7 @@ typedef struct {
     int RRNdoNo;
     int P[ordem_arvB];  //RRN das subárvores
     int C[ordem_arvB-1]; // chave de busca dos registros
-    int Pr[ordem_arvB-1]; // byteoffset do registro no arquivo de registros
+    long long Pr[ordem_arvB-1]; // byteoffset do registro no arquivo de registros
 } no_arvB;
 
 #endif

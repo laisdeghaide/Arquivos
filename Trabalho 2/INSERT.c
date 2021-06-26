@@ -25,13 +25,32 @@ void INSERT(int c) {
         return;
     }   
     
-    /*if(c == 13) {
+     // Lê a quantidade de registros a ser inserido
+    int n;
+    scanf("%d", &n);
+
+    if(c == 13) {
+        cabecalho_arvB *cabecalho = (cabecalho_arvB*) malloc(sizeof(cabecalho_arvB));
+        le_cabecalho_arvore(fp_bin, cabecalho);
+
+        // Se houver inconsistência no arquivo, encerra
+        if(cabecalho->status == '0'){
+            printf("Falha no processamento do arquivo.\n");
+            return;
+        }
+
+        // Inicializa o status com 0
+        cabecalho->status = '0';
+
+        // Coloca o ponteiro no fim do arquivo, onde será inserido o novo registro
+        fseek(fp_bin, 0, SEEK_END);
+
 
     }
 
     else if(c == 14) {
         
-    }*/
+    }
 
     fclose(fp_bin);
     fclose(fp_index);
