@@ -58,7 +58,7 @@ void escreve_dados_linha(FILE *fp_bin, dados_linha *dados){
 
 //Funcao responsavel pela simples impressao dos dados na tela usando a struct cabecalho e a struct dados
 void printa_veiculo(dados_veiculo *dados, cabecalho_veiculo *cabecalho){
-    for(int i = 0; i < 18; i++) printf("%c", cabecalho->descrevePrefixo[i]); 
+    for(int i = 0; i < 17; i++) printf("%c", cabecalho->descrevePrefixo[i]); 
     printf(": %s\n", dados->prefixo);
 
     for(int i = 0; i < 17; i++) printf("%c", cabecalho->descreveModelo[i]);

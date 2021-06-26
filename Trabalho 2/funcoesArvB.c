@@ -218,6 +218,14 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
             // Lê os valores do registro e printa na tela
             recebe_dados_veiculo(fp_bin, dados);
             printa_veiculo(dados, cabecalho_v);
+
+            free(dados->modelo);
+            free(dados->categoria);
+            dados->modelo = NULL;
+            dados->categoria = NULL;
+
+            free(dados);
+            free(cabecalho_v);
         }
 
         // Se tipo for linha
@@ -234,6 +242,14 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
             // Lê os valores do registro e printa na tela
             recebe_dados_linha(fp_bin, dados);
             printa_linha(dados, cabecalho_l);
+
+            free(dados->nomeLinha);
+            free(dados->corLinha);
+            dados->nomeLinha = NULL;
+            dados->corLinha = NULL;
+
+            free(dados);
+            free(cabecalho_l);
         }
     }
 
@@ -242,6 +258,7 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
          printf("Registro inexistente.\n");
     }
     
+    free(cabecalho);
 }
 
 /*
