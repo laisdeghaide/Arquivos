@@ -168,9 +168,6 @@ int busca(int RRN, int *byteoffset, int *RRN_encontrado, int chave, FILE *fp_ind
     no_arvB *no = (no_arvB*) malloc(sizeof(no_arvB));
     le_no_arvore(fp_index, no);
 
-    // Printa as chaves da página para fins de debug
-    printf("C[0] = %d, C[1] = %d, C[2] = %d, C[3] = %d\n", no->C[0],no->C[1],no->C[2],no->C[3]);
-    printf("\nRRNs = %d\n", RRN);
 
     // Pesquisa na página, procurando a chave de busca
     for(int i = 0; i < ordem_arvB-1; i++) {
@@ -178,29 +175,20 @@ int busca(int RRN, int *byteoffset, int *RRN_encontrado, int chave, FILE *fp_ind
         // Se encontrou, então armazenamos seu byteoffset e saímos
         if(chave == no->C[i]) {
             *byteoffset = no->Pr[i];
-            *RRN_encontrado = RRN;
             free(no);
             return 1;
         }
-    }
 
-    // Se não, acha o próximo RRN para continuar a pesquisa
-    for(int i = 0; i < ordem_arvB-1; i++) {
-
-        // Se a chave buscada é menor que a chave[i], entao devemos descer no rrn exatamente anterior a chave[i]
-        if(chave < no->C[i]) {
-            RRN = no->P[i];
-            break;
-        }
-
+        // Se a chave buscada é menor que a chave[i] ou , entao devemos descer no rrn exatamente anterior a chave[i]
+        if(chave < no->C[i] || no->C[i] == -1) return busca(no->P[i], byteoffset, RRN_encontrado, chave, fp_index);
+    
         // Se entrou no if, então a chave buscada é maior que todas as outras chaves no nó, então usamos o último rrn da página
-        if(i == ordem_arvB-2) {
-            RRN = no->P[ordem_arvB-1];
-        }
+        if(i == ordem_arvB-2)  return busca(no->P[ordem_arvB-1], byteoffset, RRN_encontrado, chave, fp_index);
+        
     }
 
     free(no);
-    return busca(RRN, byteoffset, RRN_encontrado, chave, fp_index);
+    return 0;
 }
 
 // Função que encontra o registro que contém a chave (valor) passada

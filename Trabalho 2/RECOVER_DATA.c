@@ -29,10 +29,7 @@ void RECOVER_DATA(int c) {
         char prefixo[30], valor[30];
         scanf("%s", prefixo);
         scan_quote_string(valor);
-
-        printf("chave buscada: %s", valor);
         int valor_chave = convertePrefixo(valor);
-        printf(" = %d\n", valor_chave);
         busca_dados_indice(fp_bin, fp_index, valor_chave, c);
     }
 
