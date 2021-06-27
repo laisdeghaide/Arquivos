@@ -69,9 +69,9 @@ no_arvB *cria_no(FILE *fp_index, cabecalho_arvB *cabecalho) {
     no->folha = '1';
     no->nroChavesIndexadas = 0;
     for(int i=0; i<ordem_arvB-1; i++) {
+        no->P[i] = -1;
         no->C[i] = -1;
         no->Pr[i] = -1;
-        no->P[i] = -1;
     }
     no->P[ordem_arvB-1] = -1;
 
@@ -158,8 +158,6 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
 // Função recursiva da busca
 int busca(int RRN, int *byteoffset, int *RRN_encontrado, int chave, FILE *fp_index) {
 
-    //printf("RRN ATUAL: %d\n", RRN);
-
     // Chave de busca não encontrada / Caso Base
     if(RRN == -1) return 0;
     
@@ -168,8 +166,6 @@ int busca(int RRN, int *byteoffset, int *RRN_encontrado, int chave, FILE *fp_ind
     no_arvB *no = (no_arvB*) malloc(sizeof(no_arvB));
     le_no_arvore(fp_index, no);
 
-    //printf("C[0] = %d, C[1] = %d, C[2] = %d, C[3] = %d\n", no->C[0],no->C[1],no->C[2],no->C[3]);
-
     // Pesquisa na página, procurando a chave de busca
     for(int i = 0; i < ordem_arvB-1; i++) {
 
@@ -177,16 +173,14 @@ int busca(int RRN, int *byteoffset, int *RRN_encontrado, int chave, FILE *fp_ind
         if(chave == no->C[i]) {
             *byteoffset = no->Pr[i];
             free(no);
-            //printf("BYTEOFFSET: %d\n\n", *byteoffset);
             return 1;
         }
 
-        // Se a chave buscada é menor que a chave[i] ou , entao devemos descer no rrn exatamente anterior a chave[i]
+        // Se a chave buscada é menor que a chave[i] ou chave vazia, entao devemos descer no rrn exatamente anterior a chave[i]
         if(chave < no->C[i] || no->C[i] == -1) return busca(no->P[i], byteoffset, RRN_encontrado, chave, fp_index);
     
         // Se entrou no if, então a chave buscada é maior que todas as outras chaves no nó, então usamos o último rrn da página
         if(i == ordem_arvB-2)  return busca(no->P[ordem_arvB-1], byteoffset, RRN_encontrado, chave, fp_index);
-        
     }
 
     free(no);
@@ -237,7 +231,6 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
             // Então posiciona o ponteiro no registro que possui a chave encontrada
             fseek(fp_bin, byteoffset+5, SEEK_SET);
             dados_linha *dados = (dados_linha*) malloc(sizeof(dados_linha));
-
 
             // Lê os valores do registro e printa na tela
             recebe_dados_linha(fp_bin, dados);

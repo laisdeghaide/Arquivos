@@ -189,6 +189,7 @@ void filtrar_buffer_linha(char *buffer, cabecalho_linha *cabecalho, dados_linha 
 
 //Funcao responsavle pela leitura do cabecalho dos veiculos no arquivo binario
 void le_cabecalho_veiculo(FILE *fp_bin, cabecalho_veiculo *cabecalho){
+    fseek(fp_bin, 0, SEEK_SET);
     fread(&cabecalho->status, sizeof(char), 1, fp_bin);
     fread(&cabecalho->byteProxReg, sizeof(long long), 1, fp_bin);
     fread(&cabecalho->nroRegistros, sizeof(int), 1, fp_bin);
@@ -223,7 +224,7 @@ void recebe_dados_veiculo(FILE *fp_bin, dados_veiculo *dados){
 
 //Funcao responsavel pela leitura do cabecalho das linhas no arquivo binario
 void le_cabecalho_linha(FILE *fp_bin, cabecalho_linha *cabecalho){      
-
+    fseek(fp_bin, 0, SEEK_SET);
     fread(&cabecalho->status, sizeof(char), 1, fp_bin);
     fread(&cabecalho->byteProxReg, sizeof(long long), 1, fp_bin);
     fread(&cabecalho->nroRegistros, sizeof(int), 1, fp_bin);
