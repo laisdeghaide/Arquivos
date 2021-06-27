@@ -25,6 +25,7 @@ void CREATE_INDEX(int c) {
         return;
     }   
     
+    // Função responsável por criar a árvore e preenchê-la
     cria_arvB(fp_bin, fp_index, c);
 
     fclose(fp_bin);
