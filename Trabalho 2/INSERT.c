@@ -73,7 +73,7 @@ void INSERT(int c) {
             int valor_chave = convertePrefixo(dados->prefixo);
 
             // Insere o indice do registro na arvore
-            //insere_no(fp_index, valor_chave, cabecalho_arv->RRNproxNo, cabecalho_arv->noRaiz);
+            insere_no(fp_index, valor_chave, cabecalho_arv->RRNproxNo, cabecalho_arv);
 
             free(dados->categoria);
             free(dados->modelo);
@@ -127,7 +127,7 @@ void INSERT(int c) {
             escreve_dados_linha(fp_bin, dados);
 
             // Insere o indice do registro na arvore
-            //insere_no(fp_index, dados->codLinha, cabecalho_arv->RRNproxNo, cabecalho_arv->noRaiz);
+            insere_no(fp_index, dados->codLinha, cabecalho_arv->RRNproxNo, cabecalho_arv);
 
             free(dados->nomeLinha);
             free(dados->corLinha);
