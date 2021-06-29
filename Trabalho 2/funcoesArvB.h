@@ -19,6 +19,6 @@ int busca(int RRN, int *byteoffset_encontrado, int *RRN_anterior, int chave, FIL
 void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo);
 
 void insere_no(FILE *fp_index, int chave, int byteoffset, cabecalho_arvB *cabecalho_arv);
-void insert(int RRN_atual, int RRN, int RRN_promo, int chave, int chave_promo, int filho_promo, FILE *fp_index);
+int insere(int RRN_atual, int RRN, int chave, int *chave_promo, int *filho_promo, FILE *fp_index);
 
 #endif
