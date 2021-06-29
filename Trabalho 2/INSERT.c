@@ -72,8 +72,16 @@ void INSERT(int c) {
 
             int valor_chave = convertePrefixo(dados->prefixo);
 
+            // Lê o byteoffset do registro 
+            int offset = ftell(fp_bin);
+
             // Insere o indice do registro na arvore
-            insere_no(fp_index, valor_chave, cabecalho_arv->RRNproxNo, cabecalho_arv);
+            int resultado = insere_no(fp_index, valor_chave, offset, cabecalho_arv);
+
+            if(resultado == -1) {
+                printf("Falha no processamento de arquivo. \n");
+                return;
+            }
 
             free(dados->categoria);
             free(dados->modelo);
@@ -126,8 +134,16 @@ void INSERT(int c) {
             // Insere os registros no arquivo .bin
             escreve_dados_linha(fp_bin, dados);
 
+             // Lê o byteoffset do registro 
+            int offset = ftell(fp_bin);
+
             // Insere o indice do registro na arvore
-            insere_no(fp_index, dados->codLinha, cabecalho_arv->RRNproxNo, cabecalho_arv);
+            int resultado = insere_no(fp_index, dados->codLinha, offset, cabecalho_arv);
+
+            if(resultado == -1) {
+                printf("Falha no processamento de arquivo. \n");
+                return;
+            }
 
             free(dados->nomeLinha);
             free(dados->corLinha);

@@ -62,10 +62,8 @@ void le_no_arvore(FILE *fp, no_arvB *no) {
 }
 
 // Função que cria nó da árvore
-// Responsável por preencher as paginas de disco 
-no_arvB *cria_no(FILE *fp_index, cabecalho_arvB *cabecalho) {
+void cria_no(no_arvB *no) {
 
-    no_arvB *no = (no_arvB*)malloc(sizeof(no_arvB));
     no->folha = '1';
     no->nroChavesIndexadas = 0;
     for(int i=0; i<ordem_arvB-1; i++) {
@@ -80,8 +78,6 @@ no_arvB *cria_no(FILE *fp_index, cabecalho_arvB *cabecalho) {
     escreve_no_arvore(fp_index, *no);
     cabecalho->RRNproxNo++;
     */
-
-    return no;
 }
 
 // Função que cria indice para árvore
@@ -154,7 +150,6 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
         free(dados);
     }
 }
-
 
 // Função recursiva da busca
 int busca(int RRN, int *byteoffset, int *RRN_encontrado, int chave, FILE *fp_index) {
@@ -257,23 +252,21 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
 // Função recursiva da inserção
 /*
 RRN_atual: RRN da página da árvore-B que está atualmente em uso (inicialmente, a raiz)
-RRN_promo: RRN que será promovido
 chave: chave a ser inserida
 chave_promo: retorna a chave promovida, caso a inserção resulte no particionamento e na promoção da chave
 filho_promo: nó filho que será promovido
 */
-int insere(int RRN_atual, int RRN, int chave, int *chave_promo, int *filho_promo, FILE *fp_index) {
-
-    cabecalho_arvB *cabecalho_arv1 = (cabecalho_arvB*)malloc(sizeof(cabecalho_arvB)); 
-    cabecalho_arvB *cabecalho_arv2 = (cabecalho_arvB*)malloc(sizeof(cabecalho_arvB)); 
+int insere(int RRN_atual, int byteoffset, int chave, int *chave_promo, int *filho_promo, FILE *fp_index, cabecalho_arvB *cabecalho_arv) {
     
     // VARIÁVEIS LOCAIS:
-    no_arvB *pagina = cria_no(fp_index, cabecalho_arv1); // página de disco correntemente examinada pela função
-    no_arvB *nova_pagina = cria_no(fp_index, cabecalho_arv2); // página de disco nova resultante do particionamento
+    no_arvB *pagina; // página de disco nova resultante do particionamento
+    no_arvB *nova_pagina; // página de disco correntemente examinada pela função 
     int pos = 0; // posição na página na qual a chave ocorre ou deveria ocorrer
     int p_b_chave; // chave promovida do nível inferior para ser inserida na página
     int p_b_rrn; // RRN promovido do nível inferior para ser inserido na página, filho à direita de P_B_CHAVE
 
+    cria_no(pagina);
+    cria_no(nova_pagina);
 
     // Se chegar em um nó folha, então é necessário inserir em um nó acima, fazendo a promoção
     if(RRN_atual == -1) {
@@ -298,7 +291,7 @@ int insere(int RRN_atual, int RRN, int chave, int *chave_promo, int *filho_promo
         if(i == ordem_arvB-2) pos++;
     }
 
-    int insercao = insere(pagina->P[pos], RRN, chave, &p_b_chave, &p_b_rrn, fp_index);
+    int insercao = insere(pagina->P[pos], byteoffset, chave, &p_b_chave, &p_b_rrn, fp_index, cabecalho_arv);
 
     // Se insercao == 0, então não é necessário promoção
     // Se insercao == -1, então aconteceu algum erro
@@ -310,49 +303,50 @@ int insere(int RRN_atual, int RRN, int chave, int *chave_promo, int *filho_promo
 
         // Shiftando todas as posições até encontrar a posição certa para inserção
         while(pos2 >= 0 && pagina->C[pos2-1] > chave) {
-            pagina->P[pos2 + 2] = pagina->P[pos2 + 1];
-            pagina->C[pos2 + 1] = pagina->C[pos2];
-            pagina->Pr[pos2 + 1] = pagina->Pr[pos2];
+            pagina->P[pos2 + 1] = pagina->P[pos2];
+            pagina->C[pos2] = pagina->C[pos2 - 1];
+            pagina->Pr[pos2] = pagina->Pr[pos2 - 1];
 
             pos2--;
         }
 
-        // inserindo
+        // Inserindo
         pagina->P[pos2 + 1] = p_b_rrn;
         pagina->C[pos2] = p_b_chave;
-        pagina->Pr[pos2] = RRN;
+        pagina->Pr[pos2] = byteoffset;
         pagina->nroChavesIndexadas++;
-
 
         fseek(fp_index, (RRN_atual+1)*77, SEEK_SET);
         escreve_no_arvore(fp_index, *pagina);
 
-        // sem promoção
+        // Sem promoção
         return 0;
     }
 
-    // é necessário realizar split e promover
+    // É necessário realizar split e promover
     else {
         split();
 
-        fseek(fp_index, (RRN_atual+1)*77,SEEK_SET);
+        fseek(fp_index, (RRN_atual+1)*77, SEEK_SET);
         escreve_no_arvore(fp_index, *pagina);
         
-        fseek(fp_index, (cabecalho_arv2->RRNproxNo+1)*77, SEEK_SET);
+        fseek(fp_index, (cabecalho_arv->RRNproxNo+1)*77, SEEK_SET);
         escrever_node(fp_index, *nova_pagina);
 
-        cabecalho_arv2->RRNproxNo++;
+        cabecalho_arv->RRNproxNo++;
 
         return 1;
     }
 }
 
 // Função que insere a chave no arquivo de indices da arvore b
-void insere_no(FILE *fp_index, int chave, int byteoffset, cabecalho_arvB *cabecalho_arv) {
+// Procedimento Driver
+int insere_no(FILE *fp_index, int chave, int byteoffset, cabecalho_arvB *cabecalho_arv) {
 
     // Cria o primeiro nó da arvore
     if(cabecalho_arv->noRaiz == -1){
-        no_arvB *no = cria_no(fp_index, cabecalho_arv);
+        no_arvB *no;
+        cria_no(no);
         no->folha = '1';
         no->nroChavesIndexadas = 1;
         no->C[0] = chave;
@@ -366,15 +360,40 @@ void insere_no(FILE *fp_index, int chave, int byteoffset, cabecalho_arvB *cabeca
 
     // Se árvore já existe, então vamos inserir 
     else {
-        int promo_key, promo_r_child, RRN;
+        int chave_promo, filho_promo;
 
-        int promocao = insert()
-        
+        // Insere recursivamente
+        int insercao = insere(cabecalho_arv->noRaiz, byteoffset, chave, &chave_promo, &filho_promo, fp_index, cabecalho_arv);
+
+        // Se for necessário promoção, então cria nova raiz e a preenche
+        if(insercao == 1) {
+            no_arvB *novo_no;
+            cria_no(novo_no);
+
+            novo_no->nroChavesIndexadas = 1;
+            novo_no->folha = '1';
+            novo_no->P[0] = cabecalho_arv->noRaiz;
+            novo_no->C[0] = chave_promo;
+            novo_no->Pr[0] = byteoffset;
+            novo_no->P[1] = filho_promo;
+
+            // Atualizando o cabeçalho
+            cabecalho_arv->noRaiz = cabecalho_arv->RRNproxNo;
+            cabecalho_arv->RRNproxNo++;
+
+            // Escrevendo a nova página na árvore
+            escreve_no_arvore(fp_index, *novo_no);
+        }
+
+        // Se houve erro
+        else if(insercao == -1) return -1;
     }
 
+    // Se não foi necessário nenhuma promoção/split
+    return 1;
 }
 
-
+//void split()
 
 
 
@@ -412,7 +431,4 @@ void insere_no(FILE *fp_index, int chave, int byteoffset, cabecalho_arvB *cabeca
         printf("Chave já inseridaaaaaaaa\n"); 
     }
 }
-
-    
-
 */
