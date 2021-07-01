@@ -72,12 +72,6 @@ void cria_no(no_arvB *no) {
         no->Pr[i] = -1;
     }
     no->P[ordem_arvB-1] = -1;
-
-    /*fseek(fp_index, (cabecalho->RRNproxNo + 1)*77, SEEK_SET);
-
-    escreve_no_arvore(fp_index, *no);
-    cabecalho->RRNproxNo++;
-    */
 }
 
 // Função que cria indice para árvore
@@ -173,14 +167,17 @@ int busca(int RRN, int *byteoffset, int *RRN_encontrado, int chave, FILE *fp_ind
         }
 
         // Se a chave buscada é menor que a chave[i] ou chave vazia, entao devemos descer no rrn exatamente anterior a chave[i]
-        if(chave < no->C[i] || no->C[i] == -1) return busca(no->P[i], byteoffset, RRN_encontrado, chave, fp_index);
-    
+        if(chave < no->C[i] || no->C[i] == -1) {
+            RRN = no->P[i];
+            break;
+        }
+
         // Se entrou no if, então a chave buscada é maior que todas as outras chaves no nó, então usamos o último rrn da página
-        if(i == ordem_arvB-2)  return busca(no->P[ordem_arvB-1], byteoffset, RRN_encontrado, chave, fp_index);
+        if(i == ordem_arvB-2)  RRN = no->P[ordem_arvB-1];
     }
 
     free(no);
-    return 0;
+    return busca(no->P[ordem_arvB-1], byteoffset, RRN_encontrado, chave, fp_index);
 }
 
 // Função que encontra o registro que contém a chave (valor) passada
@@ -259,8 +256,8 @@ filho_promo: nó filho que será promovido
 int insere(int RRN_atual, int byteoffset, int chave, int *chave_promo, int *filho_promo, FILE *fp_index, cabecalho_arvB *cabecalho_arv) {
     
     // VARIÁVEIS LOCAIS:
-    no_arvB *pagina; // página de disco nova resultante do particionamento
-    no_arvB *nova_pagina; // página de disco correntemente examinada pela função 
+    no_arvB *pagina = (no_arvB*)malloc(sizeof(no_arvB*)); // página de disco nova resultante do particionamento
+    no_arvB *nova_pagina = (no_arvB*)malloc(sizeof(no_arvB*));; // página de disco correntemente examinada pela função 
     int pos = 0; // posição na página na qual a chave ocorre ou deveria ocorrer
     int p_b_chave; // chave promovida do nível inferior para ser inserida na página
     int p_b_rrn; // RRN promovido do nível inferior para ser inserido na página, filho à direita de P_B_CHAVE
@@ -275,6 +272,8 @@ int insere(int RRN_atual, int byteoffset, int chave, int *chave_promo, int *filh
 
         return 1;
     }
+
+    le_no_arvore(fp_index, pagina);
 
     // Se a página não é um nó folha, a função é chamada recursivamente até que ela encontre uma chave ou chegue no nó folha
     // Pesquisa a página procurando a chave de busca
@@ -345,7 +344,7 @@ int insere_no(FILE *fp_index, int chave, int byteoffset, cabecalho_arvB *cabecal
 
     // Cria o primeiro nó da arvore
     if(cabecalho_arv->noRaiz == -1){
-        no_arvB *no;
+        no_arvB *no = (no_arvB*)malloc(sizeof(no_arvB));
         cria_no(no);
         no->folha = '1';
         no->nroChavesIndexadas = 1;
@@ -367,11 +366,11 @@ int insere_no(FILE *fp_index, int chave, int byteoffset, cabecalho_arvB *cabecal
 
         // Se for necessário promoção, então cria nova raiz e a preenche
         if(insercao == 1) {
-            no_arvB *novo_no;
+            no_arvB *novo_no = (no_arvB*)malloc(sizeof(no_arvB));
             cria_no(novo_no);
 
             novo_no->nroChavesIndexadas = 1;
-            novo_no->folha = '1';
+            novo_no->folha = '0';
             novo_no->P[0] = cabecalho_arv->noRaiz;
             novo_no->C[0] = chave_promo;
             novo_no->Pr[0] = byteoffset;
@@ -393,8 +392,94 @@ int insere_no(FILE *fp_index, int chave, int byteoffset, cabecalho_arvB *cabecal
     return 1;
 }
 
-//void split()
+/*
+i_chave: nova chave a ser inserida
+i_rrn: filho a direita da nova chave a ser inserida
+pagina: página do disco corrente
+chave_promo: chave promovida
+filho_promo_r: filho a direita da chave promovida
+nova_pagina: nova página de disco
+*/
+void split(int i_chave, int i_rrn, int byteoffset, int *offset_promo, no_arvB *pagina, int *chave_promo, int *filho_promo_r, no_arvB *nova_pagina, cabecalho_arvB *cabecalho_arv) {
+    
+    // Criando pagina temporária que comporta uma chave a mais 
+    int temp_P[ordem_arvB+2];
+    int temp_C[ordem_arvB+1];
+    int temp_Pr[ordem_arvB+1];
 
+    // Copia de todas as chaves e ponteiros de pagina para a pagina temporária
+    for(int i=0; i<ordem_arvB-1; i++) {
+        temp_P[i] = pagina->P[i];
+        temp_C[i] = pagina->C[i];
+        temp_Pr[i] = pagina->Pr[i];
+    }
+
+    temp_P[ordem_arvB-1] = pagina->P[ordem_arvB-1];
+
+    // Inicializando o espaço a mais
+    temp_P[ordem_arvB+1] = -1;
+    temp_C[ordem_arvB] = -1;
+    temp_Pr[ordem_arvB] = -1;
+
+    int pos = ordem_arvB-1;
+
+    // Shiftando todas as posições até encontrar a posição certa para inserção
+    while(pos >= 0 && temp_C[pos-1] > i_chave) {
+        temp_P[pos + 1] = temp_P[pos];
+        temp_C[pos] = temp_C[pos - 1];
+        temp_Pr[pos] = temp_Pr[pos - 1];
+
+        pos--;
+    }
+
+    // Inserindo
+    temp_P[pos+1] = i_rrn;
+    temp_C[pos] = i_chave;
+    temp_Pr[pos] = byteoffset;
+
+    // Chave que vai ser promovida
+    *offset_promo = temp_Pr[ordem_arvB/2];
+    *chave_promo = temp_C[ordem_arvB/2];
+    *filho_promo_r = cabecalho_arv->RRNproxNo;
+
+    pagina->nroChavesIndexadas = ordem_arvB/2;
+
+    // Cópia das chaves e ponteiros filhos que precedem chave_promo da página temporária para pagina
+    for(int i=0; i<ordem_arvB-1; i++) {
+        
+        if(i<pagina->nroChavesIndexadas) {
+            pagina->P[i+1] = temp_P[i+1];
+            pagina->C[i] = temp_C[i];
+            pagina->Pr[i] = temp_Pr[i];
+        }
+
+        // Seta o resto do nó como -1
+        else {
+            pagina->P[i+1] = -1;
+            pagina->C[i] = -1;
+            pagina->Pr[i] = -1;
+        }
+    }
+
+    // Cópia das chaves e ponteiros filhos que sucedem a chave_promo da página temporária para página
+    nova_pagina->nroChavesIndexadas = (ordem_arvB/2)-1;
+    for(int i=0; i<ordem_arvB-1; i++) {
+
+        if(i<nova_pagina->nroChavesIndexadas) {
+            nova_pagina->P[i+1] = temp_P[pagina->nroChavesIndexadas + i + 2];
+            nova_pagina->C[i] = temp_P[pagina->nroChavesIndexadas + i + 1];
+            nova_pagina->P[i] = temp_P[pagina->nroChavesIndexadas + i + 1];
+        }
+
+        // Seta o resto do nó com -1
+        else {
+            nova_pagina->P[i+1] = -1;
+            nova_pagina->C[i] = -1;
+            nova_pagina->Pr[i] = -1;
+        }
+    }
+
+}
 
 
 /*
