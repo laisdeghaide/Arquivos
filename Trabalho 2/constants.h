@@ -8,7 +8,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdbool.h>
 
 // Estruturas criadas para representaçao dos registros de cabecalho e dados dos arquivos de veiculo e linha
 typedef struct {

@@ -2,10 +2,9 @@
 //Thiago Henrique dos Santos Cardoso, nUSP: 11796594
 
 #include "funcoesLeitura.h"
-#include "constants.h"
 
 // Função responsável pela abertura dos arquivos, retornando se houve erro ou não
-bool abertura_arquivo(FILE **fp_bin, FILE **fp_index, char *nome_bin, char *nome_index, char *modo_bin, char *modo_index) {
+int abertura_arquivo(FILE **fp_bin, FILE **fp_index, char *nome_bin, char *nome_index, char *modo_bin, char *modo_index) {
     (*fp_bin) = fopen(nome_bin, modo_bin);
     if ((*fp_bin) == NULL){
         printf("Falha no processamento do arquivo.\n");

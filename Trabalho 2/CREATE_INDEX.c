@@ -4,7 +4,6 @@
 #include "CREATE_INDEX.h"
 #include "funcoesFornecidas.h"
 #include "funcoesLeitura.h"
-#include "constants.h"
 
 void CREATE_INDEX(int c) {
 

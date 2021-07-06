@@ -3,7 +3,6 @@
 
 #include "INSERT.h"
 #include "funcoesFornecidas.h"
-#include "constants.h"
 #include "funcoesLeitura.h"
 #include "funcoesEscrita.h"
 
@@ -93,6 +92,7 @@ void INSERT(int c) {
 
     // Se for linha
     else if(c == 14) {
+        
         // Aloca espaço para o cabecalho e o lê
         cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_bin);
         
@@ -102,7 +102,7 @@ void INSERT(int c) {
             return;
         }
 
-        // Inicializa o status da árvore e do veículo com 0
+        // Inicializa o status da árvore e da linha com 0
         cabecalho_arv->status = '0';
         cabecalho_l->status = '0';
 

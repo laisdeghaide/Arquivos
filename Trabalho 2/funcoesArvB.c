@@ -6,7 +6,6 @@
 #include "funcoesEscrita.h"
 #include "funcoesFornecidas.h"
 
-
 // Função que nos auxilia na escrita de cada um dos campos do cabecalho da arvore, alocando lixo no fim
 void escreve_cabecalho_arvore(FILE *fp, cabecalho_arvB *cabecalho) {
     fseek(fp, 0, SEEK_SET);
@@ -34,8 +33,6 @@ cabecalho_arvB *le_cabecalho_arvore(FILE *fp) {
 
 // Função responsável pela escrita das paginas de disco
 void escreve_no_arvore(FILE *fp, no_arvB *no, int RRN) {
-
-   // printf("%c %d %d %d %lld %d\n", no->folha, no->nroChavesIndexadas, no->RRNdoNo, no->C[0], no->Pr[0], no->P[0]);
     fseek(fp, (RRN+1)*77, SEEK_SET);
 
     fwrite(&no->folha, sizeof(char), 1, fp);
@@ -53,7 +50,6 @@ void escreve_no_arvore(FILE *fp, no_arvB *no, int RRN) {
 
 // Função responsável por ler página de disco
 no_arvB *le_no_arvore(FILE *fp, int RRN) {
-
     fseek(fp, (RRN+1)*77, SEEK_SET);
 
     no_arvB *no = cria_no();
@@ -74,8 +70,8 @@ no_arvB *le_no_arvore(FILE *fp, int RRN) {
 
 // Função que cria nó da árvore
 no_arvB *cria_no() {
-
     no_arvB *no = (no_arvB*) malloc(sizeof(no_arvB));
+    
     no->folha = '0';
     no->nroChavesIndexadas = 0;
     for(int i=0; i<ordem_arvB-1; i++) {
@@ -98,10 +94,10 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
     cabecalho_arv->RRNproxNo = 0;
     escreve_cabecalho_arvore(fp_index, cabecalho_arv);
     
-    // Se for veiculo, le a quantidade de registros e os insere na árvore
+    // Se for veiculo, lê cada um dos registros e insere seus indices na árvore
     if(tipo == 9) {
 
-        // Aloca espaço para o cabecalho, lê ele e pega a quantidade de registros que tem no arquivo binário
+        // Aloca espaço para o cabecalho, lê ele e armazena os valores em cabecalho
         cabecalho_veiculo *cabecalho = le_cabecalho_veiculo(fp_bin);
 
         // Se houver inconsistência no arquivo, encerra
@@ -112,7 +108,7 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
 
         dados_veiculo *dados = (dados_veiculo*) malloc(sizeof(dados_veiculo));
         
-        // le cada um dos registros de veiculo e insere na arvore
+        // Lê cada um dos registros de veiculo e insere os indices na arvore
         while(fread(&dados->removido, sizeof(char), 1, fp_bin) != 0) {
 
             fread(&dados->tamanhoRegistro, sizeof(int), 1, fp_bin);
@@ -120,12 +116,12 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
             //Se o registro estiver marcado como removido, pulamos ele
             if(dados->removido == '0') fseek(fp_bin, dados->tamanhoRegistro, SEEK_CUR);
 
-            else{
+            else {
                 // Lê o byteoffset do registro e recebe os dados
                 int offset = ftell(fp_bin);
                 recebe_dados_veiculo(fp_bin, dados);
 
-                // Converte a chave para int e insere os dados na árvore
+                // Converte a chave para int e insere os indices na árvore
                 int chave = convertePrefixo(dados->prefixo);
                 insere_no(fp_index, chave, offset-5, cabecalho_arv);
 
@@ -140,9 +136,10 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
         free(dados);
     }
 
+    // Se for linha, lê cada um dos registros e insere seus indices na árvore
     else if(tipo == 10) {
         
-        // Aloca espaço para o cabecalho, lê ele e pega a quantidade de registros que tem no arquivo binário
+        // Aloca espaço para o cabecalho, lê ele e armazena os valores em cabecalho
         cabecalho_linha *cabecalho = le_cabecalho_linha(fp_bin);
 
         // Se houver inconsistência no arquivo, encerra
@@ -153,6 +150,7 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
 
         dados_linha *dados = (dados_linha*) malloc(sizeof(dados_linha));
 
+        // Lê cada um dos registros de veiculo e insere os indices na arvore
         while(fread(&dados->removido, sizeof(char), 1, fp_bin) != 0) {
 
             fread(&dados->tamanhoRegistro, sizeof(int), 1, fp_bin);
@@ -179,6 +177,7 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
         free(dados);
     }
 
+    // Seta como consistente e atuliza o cabecalho
     cabecalho_arv->status = '1';
     escreve_cabecalho_arvore(fp_index, cabecalho_arv);
 
@@ -186,7 +185,7 @@ void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo) {
 }
 
 // Função recursiva da busca
-int busca(int RRN, int *byteoffset, int chave, FILE *fp_index) {
+int busca_recursiva(int RRN, int *byteoffset, int chave, FILE *fp_index) {
 
     // Chave de busca não encontrada / Caso Base
     if(RRN == -1) return 0;
@@ -215,7 +214,7 @@ int busca(int RRN, int *byteoffset, int chave, FILE *fp_index) {
     }
 
     free(no);
-    busca(RRN, byteoffset, chave, fp_index);
+    busca_recursiva(RRN, byteoffset, chave, fp_index);
 }
 
 // Função que encontra o registro que contém a chave (valor) passada
@@ -224,7 +223,7 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
     cabecalho_arvB *cabecalho = le_cabecalho_arvore(fp_index);
     
     int encontrou, byteoffset = 0;
-    encontrou = busca(cabecalho->noRaiz, &byteoffset, valor, fp_index);
+    encontrou = busca_recursiva(cabecalho->noRaiz, &byteoffset, valor, fp_index);
     
     // Se encontramos a chave associada ao valor passado, então
     if(encontrou) {
@@ -232,7 +231,8 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
         // Se tipo for veiculo 
         if(tipo == 11) {
             
-            //cabecalho_veiculo *cabecalho_v = (cabecalho_veiculo*) malloc(sizeof(cabecalho_veiculo));
+            // Então lê o cabecalho e armazena em cabecalho_v, 
+            // pois será utilizado a descrição do cabecalho para printarmos o registro
             cabecalho_veiculo *cabecalho_v = le_cabecalho_veiculo(fp_bin);
 
             // Posiciona o ponteiro no registro que possui a chave encontrada
@@ -254,8 +254,9 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
 
         // Se tipo for linha
         else if(tipo == 12) {
-
-            //cabecalho_linha *cabecalho_l = (cabecalho_linha*)malloc(sizeof(cabecalho_linha));
+            
+            // Então lê o cabecalho e armazena em cabecalho_l, 
+            // pois será utilizado a descrição do cabecalho para printarmos o registro
             cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_bin);
                 
             // Então posiciona o ponteiro no registro que possui a chave encontrada
@@ -318,38 +319,42 @@ void split(no_arvB *pagina, int *c_promo, int *pr_promo, int *p_promo, no_arvB *
     *pr_promo = aux_Pr[ordem_arvB/2];
     *c_promo = aux_C[ordem_arvB/2];
     *p_promo = cabecalho_arv->RRNproxNo;
+    
+    // Atualiza a quantidade de chaves indexadas na pagina e na nova_pagina originada do split
+    pagina->nroChavesIndexadas = ordem_arvB/2;
+    nova_pagina->nroChavesIndexadas = ordem_arvB/2;
 
     // Passa para a página inicial todas as chaves a esquerda da chave promovida e seta como -1 o restante
     for(int i=0; i<ordem_arvB-1; i++) {
-        if(i < 2) {
+        if(i < pagina->nroChavesIndexadas) {
             pagina->P[i] = aux_P[i]; 
             pagina->C[i] = aux_C[i];
             pagina->Pr[i] = aux_Pr[i];
         }
         else {
-            if(i != 2) pagina->P[i] = -1;
+            if(i != pagina->nroChavesIndexadas) pagina->P[i] = -1;
             else pagina->P[i] = aux_P[i];
             pagina->C[i] = -1;
             pagina->Pr[i] = -1;
         }
     }
-    // Preenche a última posição da página e atualiza a quantidade de chaves
+    // Preenche a última posição da página 
     pagina->P[ordem_arvB-1] = -1; 
-    pagina->nroChavesIndexadas = ordem_arvB/2;
 
-    // Passa para a nova página as chaves a direita da que fora promovida e seta como -1 o restante     
-    for(int i=0; i<ordem_arvB/2; i++) {
-        nova_pagina->P[i] = aux_P [i + 3];
-        nova_pagina->C[i] = aux_C[i + 3];
-        nova_pagina->Pr[i] = aux_Pr[i + 3];
+    // Passa para a nova página as chaves a direita da que fora promovida e seta como -1 o restante  
+    int i=0;   
+    for(; i<nova_pagina->nroChavesIndexadas; i++) {
+        nova_pagina->P[i] = aux_P [nova_pagina->nroChavesIndexadas + i + 1];
+        nova_pagina->C[i] = aux_C[nova_pagina->nroChavesIndexadas + i + 1];
+        nova_pagina->Pr[i] = aux_Pr[nova_pagina->nroChavesIndexadas + i + 1];
     }
 
-    // Como i nunca é dois, recebo esse último RRN e atualiza número de chaves
-    nova_pagina->P[2] = aux_P[2 + 3];
-    nova_pagina->nroChavesIndexadas = ordem_arvB/2;
+    // Como i nunca é dois (nroChavesIndexadas), recebo esse último RRN
+    nova_pagina->P[nova_pagina->nroChavesIndexadas] = aux_P[nova_pagina->nroChavesIndexadas + i + 1];
 }
 
 // Função que realiza a inserção propriamente dita do registro no arquivo de índices
+//                          P             C            Pr      C promovido   Pr promovido   P promovido
 int insere_recursivo(int RRN_atual, int chave, int byteoffset, int *c_promo, int *pr_promo, int *p_promo, FILE *fp_index, cabecalho_arvB *cabecalho_arv) {
    
     // Se chegar em um nó folha, então é necessário inserir em um nó acima, retorna da chamada recursiva atual
@@ -407,7 +412,7 @@ int insere_recursivo(int RRN_atual, int chave, int byteoffset, int *c_promo, int
         pagina->Pr[aux] = *pr_promo;
         pagina->nroChavesIndexadas++;
 
-        // Reseta os valores dos parâmetros
+        // Reseta os valores dos parâmetros 
         *p_promo = -1;
         *c_promo = -1;
         *pr_promo = -1;
@@ -419,6 +424,7 @@ int insere_recursivo(int RRN_atual, int chave, int byteoffset, int *c_promo, int
 
     // É necessário realizar split e promover
     else {
+
         // Novo nó que sera inserido a direita do nó atual
         no_arvB *nova_pagina = cria_no();
         split(pagina, c_promo, pr_promo, p_promo, nova_pagina, cabecalho_arv);
@@ -440,7 +446,7 @@ int insere_recursivo(int RRN_atual, int chave, int byteoffset, int *c_promo, int
 // Função que dá início a inserção do registro no arquivo de índices
 void insere_no(FILE *fp_index, int chave, int byteoffset, cabecalho_arvB *cabecalho_arv) {
 
-    // Árvore ainda não existe, cria o primeiro nó
+    // Se árvore ainda não existe, cria o primeiro nó
     if(cabecalho_arv->noRaiz == -1){
 
         no_arvB *no = cria_no();

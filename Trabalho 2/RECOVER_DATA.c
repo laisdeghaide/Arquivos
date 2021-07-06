@@ -4,7 +4,6 @@
 #include "RECOVER_DATA.h"
 #include "funcoesFornecidas.h"
 #include "funcoesLeitura.h"
-#include "constants.h"
 
 void RECOVER_DATA(int c) {
 
@@ -17,19 +16,27 @@ void RECOVER_DATA(int c) {
     FILE *fp_bin, *fp_index;
     if(!abertura_arquivo(&fp_bin, &fp_index, nome_bin, nome_index, "rb", "rb")) return;
     
+    // Se for busca no arquivo de veiculo
     if(c == 11) {
+        // Lê o "prefixo" e o valor
         char prefixo[8], valor[15];
         scanf("%s", prefixo);
         scan_quote_string(valor);
+        
+        // Converte o valor para inteiro e o passa para função de busca
         int valor_chave = convertePrefixo(valor);
         busca_dados_indice(fp_bin, fp_index, valor_chave, c);
     }
 
+    // Se for busca no arquivo de linha
     else if(c == 12) {
+        // Lê o "codLinha" e o valor
         char codLinha[10];
         int valor;
         scanf("%s", codLinha);
         scanf("%d", &valor);
+
+        // Passa o valor para a função de busca
         busca_dados_indice(fp_bin, fp_index, valor, c);
     }
 
