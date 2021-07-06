@@ -218,7 +218,7 @@ int busca_recursiva(int RRN, int *byteoffset, int chave, FILE *fp_index) {
 }
 
 // Função que encontra o registro que contém a chave (valor) passada
-void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
+void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor) {
 
     cabecalho_arvB *cabecalho = le_cabecalho_arvore(fp_index);
     
@@ -227,54 +227,26 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo) {
     
     // Se encontramos a chave associada ao valor passado, então
     if(encontrou) {
-
-        // Se tipo for veiculo 
-        if(tipo == 11) {
             
-            // Então lê o cabecalho e armazena em cabecalho_v, 
-            // pois será utilizado a descrição do cabecalho para printarmos o registro
-            cabecalho_veiculo *cabecalho_v = le_cabecalho_veiculo(fp_bin);
-
-            // Posiciona o ponteiro no registro que possui a chave encontrada
-            fseek(fp_bin, byteoffset+5, SEEK_SET);
-            dados_veiculo *dados = (dados_veiculo*) malloc(sizeof(dados_veiculo));
-
-            // Lê os valores do registro e printa na tela
-            recebe_dados_veiculo(fp_bin, dados);
-            printa_veiculo(dados, cabecalho_v);
-
-            free(dados->modelo);
-            free(dados->categoria);
-            dados->modelo = NULL;
-            dados->categoria = NULL;
-
-            free(dados);
-            free(cabecalho_v);
-        }
-
-        // Se tipo for linha
-        else if(tipo == 12) {
+        // Então lê o cabecalho e armazena em cabecalho_l, 
+        // pois será utilizado a descrição do cabecalho para printarmos o registro
+        cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_bin);
             
-            // Então lê o cabecalho e armazena em cabecalho_l, 
-            // pois será utilizado a descrição do cabecalho para printarmos o registro
-            cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_bin);
-                
-            // Então posiciona o ponteiro no registro que possui a chave encontrada
-            fseek(fp_bin, byteoffset+5, SEEK_SET);
-            dados_linha *dados = (dados_linha*) malloc(sizeof(dados_linha));
+        // Então posiciona o ponteiro no registro que possui a chave encontrada
+        fseek(fp_bin, byteoffset+5, SEEK_SET);
+        dados_linha *dados = (dados_linha*) malloc(sizeof(dados_linha));
 
-            // Lê os valores do registro e printa na tela
-            recebe_dados_linha(fp_bin, dados);
-            printa_linha(dados, cabecalho_l);
+        // Lê os valores do registro e printa na tela
+        recebe_dados_linha(fp_bin, dados);
+        printa_linha(dados, cabecalho_l);
 
-            free(dados->nomeLinha);
-            free(dados->corLinha);
-            dados->nomeLinha = NULL;
-            dados->corLinha = NULL;
+        free(dados->nomeLinha);
+        free(dados->corLinha);
+        dados->nomeLinha = NULL;
+        dados->corLinha = NULL;
 
-            free(dados);
-            free(cabecalho_l);
-        }
+        free(dados);
+        free(cabecalho_l);
     }
 
     // Se o byteoffset não foi encontrado, printa "registro inexistente"

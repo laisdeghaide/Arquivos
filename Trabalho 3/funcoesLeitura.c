@@ -3,20 +3,14 @@
 
 #include "funcoesLeitura.h"
 
-// Função responsável pela abertura dos arquivos, retornando se houve erro ou não
-int abertura_arquivo(FILE **fp_v, FILE **fp_l, char *nome_veiculo, char *nome_linha, char *modo_v, char *modo_l) {
-    (*fp_v) = fopen(nome_veiculo, modo_v);
-    if ((*fp_v) == NULL){
+// Função responsável pela abertura do arquivo, retornando se houve erro ou não
+int abertura_arquivo(FILE **fp, char *nome, char *modo) {
+    (*fp) = fopen(nome, modo);
+    if ((*fp) == NULL){
         printf("Falha no processamento do arquivo.\n");
         return 0;
-    }   
-
-    (*fp_l) = fopen(nome_linha, modo_l);
-    if ((*fp_l) == NULL) {
-        printf("Falha no processamento do arquivo.\n");
-        return 0;
-    }   
-
+    }  
+    
     return 1;
 }
 

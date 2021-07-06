@@ -5,6 +5,7 @@
 #define LOOP_UNICO_H
 
 #include "constants.h"
+#include "arvB.h"
 
 //Funcao pedida responsável pelo loop aninhado
 void LOOP_UNICO(int c);

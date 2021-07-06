@@ -5,7 +5,7 @@
 
 void LOOP_ANINHADO(int c) {
     
-    // Lê nome do csv que será lido e nome do binário que será criado
+    // Lê nome os nomes dos arquivos e dos campos que vão ser procurados
     char nome_veiculo[30], nome_linha[30], codLinha_v[15], codLinha_l[15];
     scanf(" %s", nome_veiculo);
     scanf(" %s", nome_linha);
@@ -14,19 +14,22 @@ void LOOP_ANINHADO(int c) {
 
     // Checando se tem falha na abertura dos arquivos
     FILE *fp_v, *fp_l;
-    if(!abertura_arquivo(&fp_v, &fp_l, nome_veiculo, nome_linha, "rb", "rb")) return;
+    if(!abertura_arquivo(&fp_v, nome_veiculo, "rb")) return;
+    if(!abertura_arquivo(&fp_l, nome_linha, "rb")) return;
 
     cabecalho_veiculo *cabecalho_v = le_cabecalho_veiculo(fp_v);
     cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_l);
 
     // Checa o caso de não haver registros em algum dos dois arquivos e, portanto, não terá junção
     if(cabecalho_v->nroRegistros == 0 || cabecalho_l->nroRegistros == 0) {
-        printf("Falha no processamento do arquivo.\n");
+        printf("Registro inexistente.\n");
         return;
     }
 
     dados_veiculo *dados_v = (dados_veiculo*) malloc(sizeof(dados_veiculo));
     dados_linha *dados_l = (dados_linha*) malloc(sizeof(dados_linha));
+
+    int existe_registro = 0;
 
     // Para cada um dos registros lidos de veiculo, lê os registros de dados e checa se veiculo.codLinha = linha.codLinha
     while(fread(&dados_v->removido, sizeof(char), 1, fp_v) != 0) {
@@ -35,7 +38,7 @@ void LOOP_ANINHADO(int c) {
         //Se o registro estiver marcado como removido, pulamos ele
         if(dados_v->removido == '0') fseek(fp_v, dados_v->tamanhoRegistro, SEEK_CUR);
 
-        // Percorre registros de linha
+        // Percorre os registros de linha
         while(fread(&dados_l->removido, sizeof(char), 1, fp_l) != 0) {
             fread(&dados_l->tamanhoRegistro, sizeof(int), 1, fp_l);
 
@@ -54,6 +57,9 @@ void LOOP_ANINHADO(int c) {
                 free(dados_l->corLinha);
                 dados_l->nomeLinha = NULL;
                 dados_l->corLinha = NULL;
+
+                existe_registro = 1;
+                break;
             }
 
         }
@@ -64,10 +70,13 @@ void LOOP_ANINHADO(int c) {
         dados_v->categoria = NULL;
     }
 
+    // Caso não exista o registro
+    if(!existe_registro) printf("Registro inexistente.\n");
+
+    free(fp_l);
+    free(fp_v);    
     free(dados_l);
     free(dados_v);
     free(cabecalho_l);
     free(cabecalho_v);
-    free(fp_l);
-    free(fp_v);    
 }
