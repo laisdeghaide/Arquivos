@@ -13,27 +13,17 @@ void INSERT(int c) {
     char nome_bin[30], nome_index[30];
     scanf(" %s", nome_bin);
     scanf(" %s", nome_index);
-
-    // Checa caso de falha na abertura dos arquivos
-    FILE *fp_bin = fopen(nome_bin, "rb+");
-    if (fp_bin == NULL){
-        printf("Falha no processamento do arquivo.\n");
-        return;
-    }   
-
-    FILE *fp_index = fopen(nome_index, "rb+");
-    if (fp_index == NULL) {
-        printf("Falha no processamento do arquivo.\n");
-        return;
-    }   
+ 
+    // Checando se tem falha na abertura dos arquivos
+    FILE *fp_bin, *fp_index;
+    if(!abertura_arquivo(&fp_bin, &fp_index, nome_bin, nome_index, "rb+", "rb+")) return;
     
      // Lê a quantidade de registros a ser inserido
     int n;
     scanf("%d", &n);
 
     // Aloca espaço para o cabecalho de árvore e o lê
-    cabecalho_arvB *cabecalho_arv = (cabecalho_arvB*) malloc(sizeof(cabecalho_arvB));
-    le_cabecalho_arvore(fp_index, cabecalho_arv);
+    cabecalho_arvB *cabecalho_arv = le_cabecalho_arvore(fp_index);
 
     // Se houver inconsistência no arquivo, encerra
     if(cabecalho_arv->status == '0'){
@@ -45,8 +35,7 @@ void INSERT(int c) {
     if(c == 13) {
 
         // Aloca espaço para o cabecalho e o lê
-        cabecalho_veiculo *cabecalho_v = (cabecalho_veiculo*) malloc(sizeof(cabecalho_veiculo));
-        le_cabecalho_veiculo(fp_bin, cabecalho_v);
+        cabecalho_veiculo *cabecalho_v = le_cabecalho_veiculo(fp_bin);
 
         // Se houver inconsistência no arquivo, encerra
         if(cabecalho_v->status == '0'){
@@ -64,6 +53,10 @@ void INSERT(int c) {
         fseek(fp_bin, 0, SEEK_END);
 
         while(n--) {
+
+            // Lê o byteoffset do registro 
+            int offset = ftell(fp_bin);
+
             // Insere veiculo 
             insere_veiculo(cabecalho_v, dados);
 
@@ -72,16 +65,8 @@ void INSERT(int c) {
 
             int valor_chave = convertePrefixo(dados->prefixo);
 
-            // Lê o byteoffset do registro 
-            int offset = ftell(fp_bin);
-
             // Insere o indice do registro na arvore
-            int resultado = insere_no(fp_index, valor_chave, offset, cabecalho_arv);
-
-            if(resultado == -1) {
-                printf("Falha no processamento de arquivo. \n");
-                return;
-            }
+            insere_no(fp_index, valor_chave, offset, cabecalho_arv);
 
             free(dados->categoria);
             free(dados->modelo);
@@ -109,9 +94,8 @@ void INSERT(int c) {
     // Se for linha
     else if(c == 14) {
         // Aloca espaço para o cabecalho e o lê
-        cabecalho_linha *cabecalho_l = (cabecalho_linha*)malloc(sizeof(cabecalho_linha));
-        le_cabecalho_linha(fp_bin, cabecalho_l);
-
+        cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_bin);
+        
         // Se houver inconsistência no arquivo, encerra
         if(cabecalho_l->status == '0'){
             printf("Falha no processamento do arquivo.\n");
@@ -128,22 +112,18 @@ void INSERT(int c) {
         fseek(fp_bin, 0, SEEK_END);
 
         while(n--) {
-            // Insere veiculo 
+                        
+            // Lê o byteoffset do registro 
+            int offset = ftell(fp_bin);
+
+            // Recebe todos os valores passados
             insere_linha(cabecalho_l, dados);
 
             // Insere os registros no arquivo .bin
             escreve_dados_linha(fp_bin, dados);
 
-             // Lê o byteoffset do registro 
-            int offset = ftell(fp_bin);
-
             // Insere o indice do registro na arvore
-            int resultado = insere_no(fp_index, dados->codLinha, offset, cabecalho_arv);
-
-            if(resultado == -1) {
-                printf("Falha no processamento de arquivo. \n");
-                return;
-            }
+            insere_no(fp_index, dados->codLinha, offset, cabecalho_arv);
 
             free(dados->nomeLinha);
             free(dados->corLinha);

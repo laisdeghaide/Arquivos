@@ -2,6 +2,24 @@
 //Thiago Henrique dos Santos Cardoso, nUSP: 11796594
 
 #include "funcoesLeitura.h"
+#include "constants.h"
+
+// Função responsável pela abertura dos arquivos, retornando se houve erro ou não
+bool abertura_arquivo(FILE **fp_bin, FILE **fp_index, char *nome_bin, char *nome_index, char *modo_bin, char *modo_index) {
+    (*fp_bin) = fopen(nome_bin, modo_bin);
+    if ((*fp_bin) == NULL){
+        printf("Falha no processamento do arquivo.\n");
+        return 0;
+    }   
+
+    (*fp_index) = fopen(nome_index, modo_index);
+    if ((*fp_index) == NULL) {
+        printf("Falha no processamento do arquivo.\n");
+        return 0;
+    }   
+
+    return 1;
+}
 
 //Pega a string lida no laço e faz a separação com base nas vírgulas
 void filtrar_buffer_veiculo(char *buffer, cabecalho_veiculo *cabecalho, dados_veiculo *dados) {
@@ -188,7 +206,9 @@ void filtrar_buffer_linha(char *buffer, cabecalho_linha *cabecalho, dados_linha 
 }
 
 //Funcao responsavle pela leitura do cabecalho dos veiculos no arquivo binario
-void le_cabecalho_veiculo(FILE *fp_bin, cabecalho_veiculo *cabecalho){
+cabecalho_veiculo *le_cabecalho_veiculo(FILE *fp_bin) {
+    cabecalho_veiculo *cabecalho = (cabecalho_veiculo*) malloc(sizeof(cabecalho_veiculo));
+
     fseek(fp_bin, 0, SEEK_SET);
     fread(&cabecalho->status, sizeof(char), 1, fp_bin);
     fread(&cabecalho->byteProxReg, sizeof(long long), 1, fp_bin);
@@ -200,6 +220,8 @@ void le_cabecalho_veiculo(FILE *fp_bin, cabecalho_veiculo *cabecalho){
     fread(&cabecalho->descreveLinha, sizeof(char), 26, fp_bin);
     fread(&cabecalho->descreveModelo, sizeof(char), 17, fp_bin);
     fread(&cabecalho->descreveCategoria, sizeof(char), 20, fp_bin);  
+
+    return cabecalho;
 }
 
 //Funcao responsavel pela leitura dos campos do registro no arquivo binario veiculos
@@ -223,7 +245,9 @@ void recebe_dados_veiculo(FILE *fp_bin, dados_veiculo *dados){
 }
 
 //Funcao responsavel pela leitura do cabecalho das linhas no arquivo binario
-void le_cabecalho_linha(FILE *fp_bin, cabecalho_linha *cabecalho){      
+cabecalho_linha *le_cabecalho_linha(FILE *fp_bin){   
+    cabecalho_linha *cabecalho = (cabecalho_linha*) malloc(sizeof(cabecalho_linha));
+
     fseek(fp_bin, 0, SEEK_SET);
     fread(&cabecalho->status, sizeof(char), 1, fp_bin);
     fread(&cabecalho->byteProxReg, sizeof(long long), 1, fp_bin);
@@ -233,6 +257,8 @@ void le_cabecalho_linha(FILE *fp_bin, cabecalho_linha *cabecalho){
     fread(&cabecalho->descreveCartao, sizeof(char), 13, fp_bin);
     fread(&cabecalho->descreveNome, sizeof(char), 13, fp_bin);
     fread(&cabecalho->descreveCor, sizeof(char), 24, fp_bin);
+
+    return cabecalho;
 }
 
 //Funcao responsavel pela leitura dos campos do registro no arquivo binario linhas
