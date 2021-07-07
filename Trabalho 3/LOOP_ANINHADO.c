@@ -20,6 +20,12 @@ void LOOP_ANINHADO(int c) {
     cabecalho_veiculo *cabecalho_v = le_cabecalho_veiculo(fp_v);
     cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_l);
 
+    // Se houver inconsistência nos arquivos, encerra
+    if(cabecalho_v->status == '0' || cabecalho_l->status == '0'){
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
     // Checa o caso de não haver registros em algum dos dois arquivos e, portanto, não terá junção
     if(cabecalho_v->nroRegistros == 0 || cabecalho_l->nroRegistros == 0) {
         printf("Registro inexistente.\n");
@@ -59,7 +65,6 @@ void LOOP_ANINHADO(int c) {
                 dados_l->corLinha = NULL;
 
                 existe_registro = 1;
-                break;
             }
 
         }

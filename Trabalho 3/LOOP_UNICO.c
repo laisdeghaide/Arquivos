@@ -22,6 +22,12 @@ void LOOP_UNICO(int c) {
 
     cabecalho_veiculo *cabecalho_v = le_cabecalho_veiculo(fp_v);
 
+    // Se houver inconsistência no arquivo, encerra
+    if(cabecalho_v->status == '0'){
+        printf("Falha no processamento do arquivo.\n");
+        return;
+    }
+
     // Checa o caso de não haver registros no arquivo de veiculo e, portanto, não terá junção
     if(cabecalho_v->nroRegistros == 0) {
         printf("Registro inexistente.\n");
