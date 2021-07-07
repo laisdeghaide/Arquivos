@@ -238,6 +238,9 @@ void insere_veiculo(cabecalho_veiculo *cabecalho, dados_veiculo *dados){
 
     // Atualiza o tamanho do registro
     dados->tamanhoRegistro = 31 + dados->tamanhoModelo + dados->tamanhoCategoria;
+
+    // Atualiza o byteProxReg
+    cabecalho->byteProxReg += dados->tamanhoRegistro;
 }
 
 //Funcao responsavel pela insercao de um registro de linha
@@ -303,4 +306,7 @@ void insere_linha(cabecalho_linha *cabecalho, dados_linha *dados){
 
     // Atualiza o tamanho do registro
     dados->tamanhoRegistro = 13 + dados->tamanhoNome + dados->tamanhoCor;
+
+    // Atualiza o byteProxReg
+    cabecalho->byteProxReg += dados->tamanhoRegistro;
 }

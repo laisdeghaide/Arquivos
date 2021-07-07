@@ -77,9 +77,6 @@ void INSERT(int c) {
         cabecalho_arv->status = '1';
         cabecalho_v->status = '1';
 
-        //Recebe a posição atual do ponteiro e após isso, o desloca para o início do arquivo
-        cabecalho_v->byteProxReg = ftell(fp_bin);
-
         //Atualiza o cabecalho no arquivo.bin
         escreve_cabecalho_veiculo(fp_bin, *cabecalho_v);
 
@@ -134,9 +131,6 @@ void INSERT(int c) {
         //Seta os arquivos como estáveis 
         cabecalho_arv->status = '1';
         cabecalho_l->status = '1';
-
-        //Recebe a posição atual do ponteiro e após isso, o desloca para o início do arquivo
-        cabecalho_l->byteProxReg = ftell(fp_bin);
 
         //Atualiza o cabecalho no arquivo.bin
         escreve_cabecalho_linha(fp_bin, *cabecalho_l);

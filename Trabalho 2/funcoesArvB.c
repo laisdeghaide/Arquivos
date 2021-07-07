@@ -25,7 +25,7 @@ cabecalho_arvB *le_cabecalho_arvore(FILE *fp) {
     fread(&cabecalho->noRaiz, sizeof(int), 1, fp);
     fread(&cabecalho->RRNproxNo, sizeof(int), 1, fp);
 
-    char lixo[69];
+    char lixo[68];
     fread(lixo, sizeof(char), 68, fp);
 
     return cabecalho;
