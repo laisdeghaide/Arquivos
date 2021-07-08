@@ -17,7 +17,7 @@ no_arvB* cria_no();
 void cria_arvB(FILE *fp_bin, FILE *fp_index, int tipo);
 
 int busca_recursiva(int RRN, int *byteoffset_encontrado, int chave, FILE *fp_index);
-void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor, int tipo);
+void busca_dados_indice(FILE *fp_bin, FILE *fp_index, int valor);
 
 void insere_no(FILE *fp_index, int chave, int byteoffset, cabecalho_arvB *cabecalho_arv);
 int insere_recursivo(int RRN_atual, int chave, int byteoffset, int *filho_promo, int *chave_promo, int *byteoffset_promo, FILE *fp_index, cabecalho_arvB *cabecalho_arv);
