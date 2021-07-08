@@ -5,8 +5,13 @@
 #define ORDENACAO_H
 
 #include "constants.h"
+#include "funcoesLeitura.h"
+#include "funcoesEscrita.h"
+#include "funcoesArvB.h"
+#include "arvB.h"
+#include "funcoesFornecidas.h"
 
 //Funcao pedida responsável pelo loop aninhado
-void ORDENACAO(int c);
+void ORDENACAO();
 
 #endif

@@ -4,6 +4,10 @@
 #include "funcoesEscrita.h"
 #include "funcoesFornecidas.h"
 
+/* 
+ * Funcionalidades do Trabalho 1 Utilizadas 
+ */
+
 // Funcao responsavel pela escrita do cabecalho do veiculo no arquivo binário
 void escreve_cabecalho_veiculo(FILE *fp_bin, cabecalho_veiculo cabecalho){
     fseek(fp_bin, 0, SEEK_SET);
@@ -76,8 +80,8 @@ void printa_veiculo(dados_veiculo *dados, cabecalho_veiculo *cabecalho){
     printf("\n");
 
     for(int i = 0 ; i < 42 ; i++) printf("%c", cabecalho->descreveLugares[i]);
-    if(dados->quantidadeLugares == -1)  printf(": campo com valor nulo\n\n");
-    else printf(": %d\n\n", dados->quantidadeLugares);
+    if(dados->quantidadeLugares == -1)  printf(": campo com valor nulo\n");
+    else printf(": %d\n", dados->quantidadeLugares);
 }
 
 //Funcao responsavel pela simples impressao dos dados na tela usando a struct cabecalho e a struct dados
@@ -152,155 +156,4 @@ void valor_cartao(char cartao){
         printf("PAGAMENTO EM CARTAO E DINHEIRO");
     else if (cartao == 'F')
         printf("PAGAMENTO EM CARTAO SOMENTE NO FINAL DE SEMANA");
-}
-
-//Funcao responsavel pela insercao de um registro de veiculo
-void insere_veiculo(cabecalho_veiculo *cabecalho, dados_veiculo *dados){
-    char aux[50];
-    dados->removido = '1';
-
-    // Pega a string que corresponde ao prefixo
-    scan_quote_string(aux);
-
-    //Checa se foi inserido como logicamente removido
-    if (aux[0] == '*')
-    {
-        //Trata os casos em que temos o * como primeiro byte : *XXX vira XXX\0
-        for (int i = 0; i <= 4; i++)
-        {
-            if (i != 4)
-                aux[i] = aux[i + 1];
-            else
-                aux[i] = '\0';
-        }
-        cabecalho->nroRegRemovidos++;
-        dados->removido = '0';
-    }
-    else
-    {
-        cabecalho->nroRegistros++;
-        dados->removido = '1';
-    }
-    // Copia o valor de aux para o prefixo
-    strcpy(dados->prefixo, aux);
-
-    // Pega a string correspondente a data
-    scan_quote_string(dados->data);             
-
-    // Checa se é nulo
-    // Se for, faz o tratamento
-    if(strcmp(dados->data, "NULO") == 0){
-    for(int i = 0; i < 10; i++) {
-            if(i == 0) dados->data[i] = '\0';
-            else dados->data[i] = '@';
-        }
-    }
-    
-    // Pega a quantidade de lugares
-    scan_quote_string(aux);              
-
-    // Checa se é nulo e faz o tratamento caso seja
-    if(strcmp(aux, "NULO") == 0) dados->quantidadeLugares = -1;
-    else dados->quantidadeLugares = atoi(aux);
-
-    // Pega o código da linha
-    scan_quote_string(aux);           
-
-    // Checa se é nulo e faz o tratamento caso seja
-    if(strcmp(aux, "NULO") == 0) dados->codLinha = -1;
-    else dados->codLinha = atoi(aux);
-
-    // Pega o modelo e seu tamanho, e trata se for nulo
-    scan_quote_string(aux);          
-    if(strcmp(aux, "NULO") == 0){
-        dados->modelo = (char*) malloc(sizeof(char));
-        dados->modelo[0] = '\0';
-        dados->tamanhoModelo = 0;
-    }
-    else {
-        dados->modelo = malloc(sizeof(char) * (strlen(aux)+1));
-        strcpy(dados->modelo, aux);
-        dados->tamanhoModelo = strlen(aux);
-    }
-
-    // Pega a categoria e seu tamanho, e trata se for nulo
-    scan_quote_string(aux);            
-    if(strcmp(aux, "NULO") == 0){
-        dados->categoria = (char*) malloc(sizeof(char));
-        dados->categoria[0] = '\0';
-        dados->tamanhoCategoria = 0;
-    }
-    else {
-        dados->categoria = malloc(sizeof(char) * (strlen(aux)+1));
-        strcpy(dados->categoria, aux);
-        dados->tamanhoCategoria = strlen(aux);
-    }
-
-    // Atualiza o tamanho do registro
-    dados->tamanhoRegistro = 31 + dados->tamanhoModelo + dados->tamanhoCategoria;
-}
-
-//Funcao responsavel pela insercao de um registro de linha
-void insere_linha(cabecalho_linha *cabecalho, dados_linha *dados){
-    char aux[50];
-
-    // Lê o código da linha como string para conseguirmos tratar caso seja inserido como logicamente removido
-    scanf("%s", aux);
-
-    // Tratando caso seja logicamente removido
-    if (aux[0] == '*')
-    {
-        for (int i = 0; i < 3; i++)
-        {   
-            if (i != 2)
-                aux[i] = aux[i + 1];
-            else
-                aux[i] = '\0';
-        }
-        cabecalho->nroRegRemovidos++;
-        dados->removido = '0';
-    }
-    else
-    {
-        cabecalho->nroRegistros++;
-        dados->removido = '1';
-    }
-    dados->codLinha = atoi(aux);
-
-
-    // Pega a string aceita cartão e trata se for nulo
-    scan_quote_string(aux);
-    if(strcmp(aux, "NULO") == 0)
-        dados->aceitaCartao = '\0';
-    else
-        dados->aceitaCartao = aux[0];
-    
-    // Pega a string nome da linha e seu tamanho e trata se for nulo
-    scan_quote_string(aux);
-    if(strcmp(aux, "NULO") == 0){
-        dados->nomeLinha = (char*) malloc(sizeof(char));
-        dados->nomeLinha[0] = '\0';
-        dados->tamanhoNome = 0;
-    }
-    else {
-        dados->nomeLinha = malloc(sizeof(char) * (strlen(aux)+1));
-        strcpy(dados->nomeLinha, aux);
-        dados->tamanhoNome = strlen(aux);
-    }
-
-    // Pega a cor da linha e seu tamanho e trata se for nulo
-    scan_quote_string(aux);            
-    if(strcmp(aux, "NULO") == 0){
-        dados->corLinha = (char*) malloc(sizeof(char));
-        dados->corLinha[0] = '\0';
-        dados->tamanhoCor = 0;
-    }
-    else {
-        dados->corLinha = malloc(sizeof(char) * (strlen(aux)+1));
-        strcpy(dados->corLinha, aux);
-        dados->tamanhoCor = strlen(aux);
-    }
-
-    // Atualiza o tamanho do registro
-    dados->tamanhoRegistro = 13 + dados->tamanhoNome + dados->tamanhoCor;
 }

@@ -5,8 +5,12 @@
 #define LOOP_ANINHADO_H
 
 #include "constants.h"
+#include "funcoesLeitura.h"
+#include "funcoesEscrita.h"
+#include "funcoesArvB.h"
+#include "arvB.h"
 
 //Funcao pedida responsável pelo loop aninhado
-void LOOP_ANINHADO(int c);
+void LOOP_ANINHADO();
 
 #endif

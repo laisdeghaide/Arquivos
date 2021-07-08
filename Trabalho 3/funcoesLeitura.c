@@ -3,6 +3,10 @@
 
 #include "funcoesLeitura.h"
 
+/* 
+ * Funcionalidades do Trabalho 1 Utilizadas 
+ */
+
 // Função responsável pela abertura do arquivo, retornando se houve erro ou não
 int abertura_arquivo(FILE **fp, char *nome, char *modo) {
     (*fp) = fopen(nome, modo);
@@ -10,7 +14,6 @@ int abertura_arquivo(FILE **fp, char *nome, char *modo) {
         printf("Falha no processamento do arquivo.\n");
         return 0;
     }  
-    
     return 1;
 }
 
@@ -85,3 +88,4 @@ void recebe_dados_linha(FILE *fp_bin, dados_linha *dados){
     fread(dados->corLinha, sizeof(char), dados->tamanhoCor, fp_bin);
     dados->corLinha [dados->tamanhoCor] = '\0';
 }
+

@@ -36,7 +36,7 @@ typedef struct {
     int tamanhoCategoria;
 } dados_veiculo;
 
-typedef struct {
+typedef struct { //24+13+13+15+4+4+8+1
     char status;
     long long int byteProxReg;
     int nroRegistros;

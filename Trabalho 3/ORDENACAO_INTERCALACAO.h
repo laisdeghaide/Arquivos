@@ -5,8 +5,12 @@
 #define ORDENACAO_INTERCALACAO_H
 
 #include "constants.h"
+#include "funcoesLeitura.h"
+#include "funcoesEscrita.h"
+#include "funcoesArvB.h"
+#include "arvB.h"
 
 //Funcao pedida responsável pelo loop aninhado
-void ORDENACAO_INTERCALACAO(int c);
+void ORDENACAO_INTERCALACAO();
 
 #endif

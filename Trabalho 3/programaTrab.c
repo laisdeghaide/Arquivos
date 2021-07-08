@@ -12,10 +12,10 @@ int main() {
     int c;
     scanf("%d", &c);
 
-    if(c == 15) LOOP_ANINHADO(c); 
-    else if(c == 16) LOOP_UNICO(c);
-    else if(c == 17) ORDENACAO(c);
-    else if(c == 18) ORDENACAO_INTERCALACAO(c);
+    if(c == 15) LOOP_ANINHADO(); 
+    else if(c == 16) LOOP_UNICO();
+    else if(c == 17) ORDENACAO();
+    //else if(c == 18) ORDENACAO_INTERCALACAO();
 
     return 0;
 }

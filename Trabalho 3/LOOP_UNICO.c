@@ -3,16 +3,16 @@
 
 #include "LOOP_UNICO.h"
 
-void LOOP_UNICO(int c) {
+void LOOP_UNICO() {
 
     // Lê nome os nomes dos arquivos e dos campos que vão ser procurados
-    char nome_veiculo[30], nome_linha[30], codLinha_v[15], codLinha_l[15], indiceLinha[15];
-    int indiceLinha;
+    char nome_veiculo[30], nome_linha[30], codLinha_v[15], codLinha_l[15], indiceLinha[30];
     scanf(" %s", nome_veiculo);
     scanf(" %s", nome_linha);
-    scanf(" %s", codLinha_v);
-    scanf(" %s", codLinha_l);    
-    scanf(" %s", indiceLinha);
+    scanf(" %s", codLinha_v);   
+    scanf(" %s", codLinha_l);
+    scanf(" %s", indiceLinha);    
+
 
     // Checando se tem falha na abertura dos arquivos
     FILE *fp_v, *fp_l, *fp_index;
@@ -21,36 +21,50 @@ void LOOP_UNICO(int c) {
     if(!abertura_arquivo(&fp_index, indiceLinha, "rb")) return;
 
     cabecalho_veiculo *cabecalho_v = le_cabecalho_veiculo(fp_v);
+    cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_l);
+    cabecalho_arvB *cabecalho_arv = le_cabecalho_arvore(fp_index);
 
-    // Se houver inconsistência no arquivo, encerra
-    if(cabecalho_v->status == '0'){
+    // Checa o caso de não haver registros no arquivo de veiculo e, portanto, não terá junção
+    if(cabecalho_v->status == '0' || cabecalho_l->status == '0' || cabecalho_arv->status == '0') {
         printf("Falha no processamento do arquivo.\n");
+        free(cabecalho_v);
+        free(cabecalho_l);
+        free(cabecalho_arv);
         return;
     }
 
-    // Checa o caso de não haver registros no arquivo de veiculo e, portanto, não terá junção
-    if(cabecalho_v->nroRegistros == 0) {
+    if(cabecalho_v->nroRegistros == '0' || cabecalho_l->nroRegistros == 0 || cabecalho_arv->noRaiz == -1){
         printf("Registro inexistente.\n");
+        free(cabecalho_v);
+        free(cabecalho_l);
+        free(cabecalho_arv);
         return;
     }
 
     dados_veiculo *dados_v = (dados_veiculo*) malloc(sizeof(dados_veiculo));
+    int existe_reg = 0;
 
     // Percorre registros de linha
     while(fread(&dados_v->removido, sizeof(char), 1, fp_v) != 0) {
+        
         fread(&dados_v->tamanhoRegistro, sizeof(int), 1, fp_v);
 
         //Se o registro estiver marcado como removido, pulamos ele
         if(dados_v->removido == '0') fseek(fp_v, dados_v->tamanhoRegistro, SEEK_CUR);
+    
+        // Realiza a busca do valor passado como parâmetro no índice da árvore B
+        else {
+            recebe_dados_veiculo(fp_v, dados_v);
+            busca_dados_indice(fp_l, fp_index, dados_v, &existe_reg, cabecalho_v, cabecalho_l, cabecalho_arv);
+        }
 
-        // Passa o valor para a função de busca
-        busca_dados_indice(fp_l, fp_index, dados_v->codLinha);
-        
         free(dados_v->modelo);
         free(dados_v->categoria);
         dados_v->modelo = NULL;
         dados_v->categoria = NULL;
     }
+
+    if(!existe_reg) printf("Registro inexistente.\n");
 
     free(fp_v);
     free(fp_l);

@@ -19,16 +19,20 @@ void LOOP_ANINHADO(int c) {
 
     cabecalho_veiculo *cabecalho_v = le_cabecalho_veiculo(fp_v);
     cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_l);
-
-    // Se houver inconsistência nos arquivos, encerra
-    if(cabecalho_v->status == '0' || cabecalho_l->status == '0'){
-        printf("Falha no processamento do arquivo.\n");
+        
+    // Checa o caso de não haver registros em algum dos dois arquivos e, portanto, não terá junção
+    if(cabecalho_v->nroRegistros == 0 || cabecalho_l->nroRegistros == 0) {
+        printf("Registro Inexistente.\n");
+        free(cabecalho_l);
+        free(cabecalho_v);
         return;
     }
 
     // Checa o caso de não haver registros em algum dos dois arquivos e, portanto, não terá junção
-    if(cabecalho_v->nroRegistros == 0 || cabecalho_l->nroRegistros == 0) {
-        printf("Registro inexistente.\n");
+    if(cabecalho_v->status == '0' || cabecalho_l->status == '0') {
+        printf("Falha no processamento do arquivo.\n");
+        free(cabecalho_l);
+        free(cabecalho_v);        
         return;
     }
 
@@ -37,36 +41,47 @@ void LOOP_ANINHADO(int c) {
 
     int existe_registro = 0;
 
-    // Para cada um dos registros lidos de veiculo, lê os registros de dados e checa se veiculo.codLinha = linha.codLinha
+    // Para cada um dos registros lidos de veiculo, lê todos os registros de linha e checa se veiculo.codLinha = linha.codLinha
     while(fread(&dados_v->removido, sizeof(char), 1, fp_v) != 0) {
+
         fread(&dados_v->tamanhoRegistro, sizeof(int), 1, fp_v);
 
-        //Se o registro estiver marcado como removido, pulamos ele
+        // Se o registro estiver marcado como removido, pulamos ele
         if(dados_v->removido == '0') fseek(fp_v, dados_v->tamanhoRegistro, SEEK_CUR);
 
-        // Percorre os registros de linha
-        while(fread(&dados_l->removido, sizeof(char), 1, fp_l) != 0) {
-            fread(&dados_l->tamanhoRegistro, sizeof(int), 1, fp_l);
+        else{
+            
+            recebe_dados_veiculo(fp_v, dados_v);
 
-            //Se o registro estiver marcado como removido, pulamos ele
-            if(dados_l->removido == '0') fseek(fp_l, dados_l->tamanhoRegistro, SEEK_CUR);
+            // Percorre os registros de linha
+            while(fread(&dados_l->removido, sizeof(char), 1, fp_l) != 0) {
+                
+                fread(&dados_l->tamanhoRegistro, sizeof(int), 1, fp_l);
 
-            // Se veiculo.codLinha = linha.codLinha, printa os dados do veiculo e depois da linha
-            if(dados_v->codLinha == dados_l->codLinha) {
-                recebe_dados_veiculo(fp_v, dados_v);
-                printa_veiculo(dados_v, cabecalho_v);
+                //Se o registro estiver marcado como removido, pulamos ele
+                if(dados_l->removido == '0') fseek(fp_l, dados_l->tamanhoRegistro, SEEK_CUR);
 
-                recebe_dados_linha(fp_l, dados_l);
-                printa_linha(dados_l, cabecalho_l);
+                // Se veiculo.codLinha = linha.codLinha, printa os dados do veiculo e depois da linha
+                else {
+                    recebe_dados_linha(fp_l, dados_l);
+
+                    if(dados_v->codLinha == dados_l->codLinha) {
+                        printa_veiculo(dados_v, cabecalho_v);
+                        printa_linha(dados_l, cabecalho_l);
+                        existe_registro = 1;
+                        break;
+                    }
+
+                }
 
                 free(dados_l->nomeLinha);
                 free(dados_l->corLinha);
                 dados_l->nomeLinha = NULL;
                 dados_l->corLinha = NULL;
-
-                existe_registro = 1;
             }
 
+            // Coloca o ponteiro do arquivo de linhas no início dos registros
+            fseek(fp_l, 82*sizeof(char), SEEK_SET);
         }
   
         free(dados_v->modelo);
@@ -75,7 +90,6 @@ void LOOP_ANINHADO(int c) {
         dados_v->categoria = NULL;
     }
 
-    // Caso não exista o registro
     if(!existe_registro) printf("Registro inexistente.\n");
 
     free(fp_l);
