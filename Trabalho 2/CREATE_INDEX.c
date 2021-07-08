@@ -12,7 +12,7 @@ void CREATE_INDEX(int c) {
     scanf(" %s", nome_bin);
     scanf(" %s", nome_index);
 
-    // Checando se tem falha na abertura dos arquivos
+    // Checando se ocorreram falhas na abertura de um dos arquivos
     FILE *fp_bin, *fp_index;
     if(!abertura_arquivo(&fp_bin, &fp_index, nome_bin, nome_index, "rb", "wb+")) return;
 

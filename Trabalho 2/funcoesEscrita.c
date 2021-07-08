@@ -4,6 +4,10 @@
 #include "funcoesEscrita.h"
 #include "funcoesFornecidas.h"
 
+/* 
+ * Funcionalidades do Trabalho 1 Utilizadas 
+ */
+
 // Funcao responsavel pela escrita do cabecalho do veiculo no arquivo binário
 void escreve_cabecalho_veiculo(FILE *fp_bin, cabecalho_veiculo cabecalho){
     fseek(fp_bin, 0, SEEK_SET);

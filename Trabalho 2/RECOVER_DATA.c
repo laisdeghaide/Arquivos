@@ -14,7 +14,7 @@ void RECOVER_DATA(int c) {
 
     // Checando se tem falha na abertura dos arquivos
     FILE *fp_bin, *fp_index;
-    if(!abertura_arquivo(&fp_bin, &fp_index, nome_bin, nome_index, "rb", "rb")) return;
+    if(!abertura_arquivo(&fp_bin, &fp_index, nome_bin, nome_index, "rb", "rb")) exit(EXIT_FAILURE);
     
     // Se for busca no arquivo de veiculo
     if(c == 11) {

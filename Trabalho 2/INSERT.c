@@ -17,7 +17,7 @@ void INSERT(int c) {
     FILE *fp_bin, *fp_index;
     if(!abertura_arquivo(&fp_bin, &fp_index, nome_bin, nome_index, "rb+", "rb+")) return;
     
-     // Lê a quantidade de registros a ser inserido
+    // Lê a quantidade de registros a ser inserido
     int n;
     scanf("%d", &n);
 
@@ -27,6 +27,7 @@ void INSERT(int c) {
     // Se houver inconsistência no arquivo, encerra
     if(cabecalho_arv->status == '0'){
         printf("Falha no processamento do arquivo.\n");
+        free(cabecalho_arv);
         return;
     }
 
@@ -39,6 +40,8 @@ void INSERT(int c) {
         // Se houver inconsistência no arquivo, encerra
         if(cabecalho_v->status == '0'){
             printf("Falha no processamento do arquivo.\n");
+            free(cabecalho_v);
+            free(cabecalho_arv);
             return;
         }
 
@@ -96,6 +99,8 @@ void INSERT(int c) {
         // Se houver inconsistência no arquivo, encerra
         if(cabecalho_l->status == '0'){
             printf("Falha no processamento do arquivo.\n");
+            free(cabecalho_l);
+            free(cabecalho_arv);
             return;
         }
 

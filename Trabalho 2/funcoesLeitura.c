@@ -3,9 +3,14 @@
 
 #include "funcoesLeitura.h"
 
+/* 
+ * Funcionalidades do Trabalho 1 Utilizadas 
+ */
+
 // Função responsável pela abertura dos arquivos, retornando se houve erro ou não
 int abertura_arquivo(FILE **fp_bin, FILE **fp_index, char *nome_bin, char *nome_index, char *modo_bin, char *modo_index) {
     (*fp_bin) = fopen(nome_bin, modo_bin);
+    
     if ((*fp_bin) == NULL){
         printf("Falha no processamento do arquivo.\n");
         return 0;
@@ -18,190 +23,6 @@ int abertura_arquivo(FILE **fp_bin, FILE **fp_index, char *nome_bin, char *nome_
     }   
 
     return 1;
-}
-
-//Pega a string lida no laço e faz a separação com base nas vírgulas
-void filtrar_buffer_veiculo(char *buffer, cabecalho_veiculo *cabecalho, dados_veiculo *dados) {
-    
-    char *token, auxiliar[100];
-
-    //Recebe o prefixo e passa para a struct dados
-    token = strtok(buffer, ",");
-    strcpy(dados->prefixo, token);
-
-    //Trata os casos em que o registro está removido
-    if (dados->prefixo[0] == '*')
-    {
-        //Trata os casos em que temos o * como primeiro byte : *XXX vira XXX\0
-        for (int i = 0; i <= 4; i++)
-        {
-            if (i != 4)
-                dados->prefixo[i] = dados->prefixo[i + 1];
-            else
-                dados->prefixo[i] = '\0';
-        }
-        cabecalho->nroRegRemovidos++;
-        dados->removido = '0';
-    }
-    else
-    {
-        cabecalho->nroRegistros++;
-        dados->removido = '1';
-    }
-
-    //Recebe a data e passa para a struct dados
-    token = strtok(NULL, ",");
-    strcpy(dados->data, token);
-
-    //Trata os casos em que data é um campo NULO : NULO vira \0@@@@@@@@@
-    if (strcmp(dados->data, "NULO") == 0)
-    {
-        for (int i = 0; i < 10; i++)
-        {
-            if (i == 0)
-                dados->data[i] = '\0';
-            else
-                dados->data[i] = '@';
-        }
-    }
-
-    //Recebe a quantidade de lugares e passa para a string auxiliar
-    token = strtok(NULL, ",");
-    strcpy(auxiliar, token);
-
-    //Trata os casos em que a variável é NULA; caso NULO, convertemos a string para inteiro
-    if (strcmp(auxiliar, "NULO") == 0)
-        dados->quantidadeLugares = -1;
-    else
-        dados->quantidadeLugares = atoi(auxiliar);
-
-    //Recebe o código da linha e passa para a string auxiliar
-    token = strtok(NULL, ",");
-    strcpy(auxiliar, token);
-
-    //Trata os casos em que a variável é NULA; caso NULO, convertemos a string para inteiro
-    if (strcmp(auxiliar, "NULO") == 0)
-        dados->codLinha = -1;
-    else
-        dados->codLinha = atoi(auxiliar);
-
-    //Recebe o valor do modelo
-    token = strtok(NULL, ",");
-
-    //Se nulo, alocamos um único byte e preenchemos com o \0
-    if (strcmp(token, "NULO") == 0)
-    {
-        dados->modelo = (char *)malloc(sizeof(char));
-        dados->modelo[0] = '\0';
-        dados->tamanhoModelo = 0;
-    }
-    //Caso contrário, alocamos o tamanho do token+1, para armazenarmos o \0
-    else
-    {
-        dados->modelo = malloc(sizeof(char) * (strlen(token) + 1));
-        strcpy(dados->modelo, token);
-        dados->tamanhoModelo = strlen(token);
-    }
-
-    //Recebe o valor da categoria
-    token = strtok(NULL, ",");
-
-    //Se nulo, alocamos um único byte e preenchemos com o \0
-    if (strcmp(token, "NULO") == 0)
-    {
-        dados->categoria = (char *)malloc(sizeof(char));
-        dados->categoria[0] = '\0';
-        dados->tamanhoCategoria = 0;
-    }
-    //Caso contrário, alocamos o tamanho de token e substituímos o \n recebido por um \0
-    else
-    {
-        dados->categoria = malloc(sizeof(char) * (strlen(token)));
-        strcpy(dados->categoria, token);
-        dados->categoria[strlen(token) - 1] = '\0';
-        dados->tamanhoCategoria = strlen(token) - 1;
-    }
-
-    dados->tamanhoRegistro = 31 + dados->tamanhoModelo + dados->tamanhoCategoria;
-}
-
-//Pega a string lida no laço e faz a separação com base nas vírgulas
-void filtrar_buffer_linha(char *buffer, cabecalho_linha *cabecalho, dados_linha *dados)  {
-
-    char *token, auxiliar[100];
-
-    //Recebe o código da linha e passa pra string
-    token = strtok(buffer, ",");
-    strcpy(auxiliar, token);
-
-    //Trata o caso em que o registro está removido; se não estiver, converte a string pra inteiro
-    if (auxiliar[0] == '*')
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            if (i != 2)
-                auxiliar[i] = auxiliar[i + 1];
-            else
-                auxiliar[i] = '\0';
-        }
-        cabecalho->nroRegRemovidos++;
-        dados->removido = '0';
-    }
-    else
-    {
-        cabecalho->nroRegistros++;
-        dados->removido = '1';
-    }
-    dados->codLinha = atoi(auxiliar);
-
-    //Recebe o aceita cartão e passa pra string auxiliar
-    token = strtok(NULL, ",");
-    strcpy(auxiliar, token);
-
-    //Trata o caso em que temos uma variável nula
-    if (strcmp(auxiliar, "NULO") == 0)
-        dados->aceitaCartao = '\0';
-    else
-        dados->aceitaCartao = auxiliar[0];
-
-    //Recebe o nome da linha
-    token = strtok(NULL, ",");
-
-    //Se nulo, alocamos um único byte e preenchemos ele com \0
-    if (strcmp(token, "NULO") == 0)
-    {
-        dados->nomeLinha = (char *)malloc(sizeof(char));
-        dados->nomeLinha[0] = '\0';
-        dados->tamanhoNome = 0;
-    }
-    //Caso contrário, alocamos o tamanho do token+1, para armazenarmos o \0
-    else
-    {
-        dados->nomeLinha = malloc(sizeof(char) * (strlen(token) + 1));
-        strcpy(dados->nomeLinha, token);
-        dados->tamanhoNome = strlen(token);
-    }
-
-    //Recebe nome da cor
-    token = strtok(NULL, ",");
-
-    //Se nulo, alocamos um único byte e preenchemos ele com \0
-    if (strcmp(token, "NULO") == 0)
-    {
-        dados->corLinha = (char *)malloc(sizeof(char));
-        dados->corLinha[0] = '\0';
-        dados->tamanhoCor = 0;
-    }
-    //Caso contrário, alocamos o tamanho de token e substituímos o \n recebido por um \0
-    else
-    {
-        dados->corLinha = malloc(sizeof(char) * (strlen(token)));
-        strcpy(dados->corLinha, token);
-        dados->corLinha[strlen(token) - 1] = '\0';
-        dados->tamanhoCor = strlen(token) - 1;
-    }
-
-    dados->tamanhoRegistro = 13 + dados->tamanhoNome + dados->tamanhoCor;
 }
 
 //Funcao responsavle pela leitura do cabecalho dos veiculos no arquivo binario
