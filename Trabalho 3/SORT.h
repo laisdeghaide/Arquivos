@@ -1,8 +1,8 @@
 //Laís Saloum Deghaide, nUSP: 11369767
 //Thiago Henrique dos Santos Cardoso, nUSP: 11796594
 
-#ifndef ORDENACAO_H
-#define ORDENACAO_H
+#ifndef SORT_H
+#define SORT_H
 
 #include "constants.h"
 #include "funcoesLeitura.h"
@@ -13,6 +13,6 @@
 #include "funcoesOrdenacao.h"
 
 //Funcao pedida responsável pelo loop aninhado
-void ORDENACAO(int c);
+void SORT(int c);
 
 #endif

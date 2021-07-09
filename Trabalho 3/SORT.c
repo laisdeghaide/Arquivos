@@ -1,9 +1,9 @@
 //Laís Saloum Deghaide, nUSP: 11369767
 //Thiago Henrique dos Santos Cardoso, nUSP: 11796594
 
-#include "ORDENACAO.h"
+#include "SORT.h"
 
-void ORDENACAO(int c) {
+void SORT(int c) {
 
     // Lê nome os nomes dos arquivos e dos campos que vão ser procurados
     char arq_desordenado[30], arq_ordenado[50], campo_ordenacao[30];
