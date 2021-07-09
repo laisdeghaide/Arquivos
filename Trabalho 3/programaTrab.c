@@ -5,7 +5,7 @@
 #include "LOOP_ANINHADO.h"
 #include "LOOP_UNICO.h"
 #include "ORDENACAO.h"
-#include "ORDENACAO_INTERCALACAO.c"
+#include "MERGE.c"
 
 int main() {
 
@@ -14,8 +14,8 @@ int main() {
 
     if(c == 15) LOOP_ANINHADO(); 
     else if(c == 16) LOOP_UNICO();
-    else if(c == 17) ORDENACAO();
-    //else if(c == 18) ORDENACAO_INTERCALACAO();
+    else if(c == 17 || c == 18) ORDENACAO(c);
+    else if(c == 19) MERGE();
 
     return 0;
 }
