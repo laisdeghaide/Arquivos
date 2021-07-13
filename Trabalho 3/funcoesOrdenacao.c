@@ -3,6 +3,23 @@
 
 #include "funcoesOrdenacao.h"
 
+int compare(const void *a, const void *b, int tipo) {
+    if(tipo == 17) {
+        dados_veiculo *reg1 = (dados_veiculo *)a;
+        dados_veiculo *reg2 = (dados_veiculo *)b;
+        int reg3 = convertePrefixo(reg1->prefixo);
+        int reg4 = convertePrefixo(reg2->prefixo);
+
+        return (reg3 - reg4);
+    }
+    else {
+        dados_linha *reg1 = (dados_linha *)a;
+        dados_linha *reg2 = (dados_linha *)b;
+
+        return (reg1->codLinha - reg2->codLinha);
+    }
+}
+
 void ordena_arquivo(FILE *fp_ord, FILE *fp_des, int tipo, cabecalho_linha *cabecalho_l, cabecalho_veiculo *cabecalho_v){
 
     // Se quisermos ordenar um arquivo do tipo veículo
@@ -12,7 +29,7 @@ void ordena_arquivo(FILE *fp_ord, FILE *fp_des, int tipo, cabecalho_linha *cabec
         dados_veiculo **dados_ram = (dados_veiculo**) malloc(sizeof(dados_veiculo*));
 
         // (i) Passa para a RAM todo o arquivo de dados desordenado
-        for(int i = 0 ; i < cabecalho_v->nroRegistros ; i++) {
+        for(int i = 0; i < cabecalho_v->nroRegistros; i++) {
 
             dados_ram[i] = (dados_veiculo*) malloc(sizeof(dados_veiculo));
             
