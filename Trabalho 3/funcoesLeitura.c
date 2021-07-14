@@ -9,6 +9,7 @@
 
 // Função responsável pela abertura do arquivo, retornando se houve erro ou não
 int abertura_arquivo(FILE **fp, char *nome, char *modo) {
+ 
     (*fp) = fopen(nome, modo);
     if ((*fp) == NULL){
         printf("Falha no processamento do arquivo.\n");

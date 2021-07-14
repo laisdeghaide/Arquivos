@@ -10,6 +10,8 @@
 #include "funcoesArvB.h"
 #include "arvB.h"
 
+int comparadorRegistrosVeiculo(const void *p1, const void *p2);
+int comparadorRegistrosLinha(const void *p1, const void *p2);
 void ordena_arquivo(FILE *fp_ordenado, FILE *fp_desordenado, int tipo, cabecalho_linha *cabecalho_l, cabecalho_veiculo *cabecalho_v);
 
 #endif
