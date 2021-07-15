@@ -37,7 +37,6 @@ void ORDENACAO(int c) {
     }
 
     if(c == 18){
-        
         cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_des);
 
         if(cabecalho_l->status == '0') {

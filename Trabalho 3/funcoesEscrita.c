@@ -39,6 +39,7 @@ void escreve_dados_veiculo(FILE *fp_bin, dados_veiculo *dados){
 
 // Funcao responsavel pela escrita do cabecalho da linha no arquivo binário
 void escreve_cabecalho_linha(FILE *fp_bin, cabecalho_linha cabecalho){
+    fseek(fp_bin, 0, SEEK_SET);
     fwrite(&cabecalho.status, sizeof(char), 1, fp_bin);
     fwrite(&cabecalho.byteProxReg, sizeof(long long), 1, fp_bin);
     fwrite(&cabecalho.nroRegistros, sizeof(int), 1, fp_bin);
