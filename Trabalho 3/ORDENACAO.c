@@ -35,8 +35,15 @@ void ORDENACAO(int c) {
             return;
         }
 
+        // Inicializamos o status como inconsistente
+        cabecalho_v->status = '0';
+
         ordena_arquivo(fp_ord, fp_des, 17, NULL, cabecalho_v);
         free(cabecalho_v);
+
+        // Atualiza cabecalho
+        cabecalho_v->status = '1';
+        escreve_cabecalho_veiculo(fp_des, *cabecalho_v);
     }
 
     // Se for ordenação de linha
@@ -57,10 +64,17 @@ void ORDENACAO(int c) {
             return;
         }
 
+        // Inicializa status
+        cabecalho_l->status = '0';
+
         ordena_arquivo(fp_ord, fp_des, 18, cabecalho_l, NULL);
         free(cabecalho_l);
+        
+        // Atualiza cabecalho
+        cabecalho_l->status = '1';
+        escreve_cabecalho_linha(fp_des, *cabecalho_l);
     }
-    
+
     fclose(fp_ord);
     binarioNaTela(arq_ordenado);
 }

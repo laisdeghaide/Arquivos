@@ -36,6 +36,10 @@ void MERGE() {
         return;
     }
 
+    // Inicializamos o status como inconsistente
+    cabecalho_v->status = '0';
+    cabecalho_l->status = '0';
+
     // Criação dos arquivos nos quais teremos os dados ordenados
     FILE *fp_ord_v, *fp_ord_l;
     if(!abertura_arquivo(&fp_ord_v, "v_ord.bin", "wb+")) return;
@@ -96,6 +100,12 @@ void MERGE() {
     }
 
     if(!existe_registro) printf("Registro inexistente.\n");
+
+    // Atualiza cabecalho
+    cabecalho_v->status = '1';
+    cabecalho_l->status = '1';
+    escreve_cabecalho_veiculo(fp_v, *cabecalho_v);
+    escreve_cabecalho_linha(fp_l, *cabecalho_l);
     
     free(dados_v);
     free(dados_l);

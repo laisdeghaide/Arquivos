@@ -36,6 +36,10 @@ void LOOP_ANINHADO(int c) {
         return;
     }
 
+    // Inicializamos o status como inconsistente
+    cabecalho_v->status = '0';
+    cabecalho_l->status = '0';
+
     // Aloca espaço para dados de veiculo e de linha
     dados_veiculo *dados_v = (dados_veiculo*) malloc(sizeof(dados_veiculo));
     dados_linha *dados_l = (dados_linha*) malloc(sizeof(dados_linha));
@@ -92,6 +96,12 @@ void LOOP_ANINHADO(int c) {
 
     // Se não exisitir nenhum veiculo.codLinha = linha.codLinha
     if(!existe_registro) printf("Registro inexistente.\n");
+
+    // Atualiza cabecalho
+    cabecalho_v->status = '1';
+    cabecalho_l->status = '1';
+    escreve_cabecalho_veiculo(fp_v, *cabecalho_v);
+    escreve_cabecalho_linha(fp_l, *cabecalho_l);
 
     free(fp_l);
     free(fp_v);    

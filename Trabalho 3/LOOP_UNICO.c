@@ -41,6 +41,11 @@ void LOOP_UNICO() {
         return;
     }
 
+    // Inicializamos o status como inconsistente
+    cabecalho_v->status = '0';
+    cabecalho_l->status = '0';
+    cabecalho_arv->status = '0';
+
     dados_veiculo *dados_v = (dados_veiculo*) malloc(sizeof(dados_veiculo));
     int existe_reg;
 
@@ -69,9 +74,19 @@ void LOOP_UNICO() {
     // Caso não tenha encontrado
     if(!existe_reg) printf("Registro inexistente.\n");
 
+    // Atualizamos cabecalhos
+    cabecalho_v->status = '1';
+    cabecalho_l->status = '1';
+    cabecalho_arv->status = '1';
+    escreve_cabecalho_veiculo(fp_v, *cabecalho_v);
+    escreve_cabecalho_linha(fp_l, *cabecalho_l);
+    escreve_cabecalho_arvore(fp_index, cabecalho_arv);
+
     free(fp_v);
     free(fp_l);
     free(fp_index);
     free(dados_v);
     free(cabecalho_v);
+    free(cabecalho_l);
+    free(cabecalho_arv);
 }
