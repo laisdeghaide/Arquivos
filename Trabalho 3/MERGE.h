@@ -10,6 +10,7 @@
 #include "funcoesArvB.h"
 #include "arvB.h"
 #include "funcoesOrdenacao.h"
+#include <stdbool.h>
 
 void MERGE();
 

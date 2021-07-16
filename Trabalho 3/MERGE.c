@@ -42,10 +42,58 @@ void MERGE() {
     // Ordenação de ambos os arquivos
     ordena_arquivo(fp_ord_v, fp_v, 17, NULL, cabecalho_v);
     ordena_arquivo(fp_ord_l, fp_l, 18, cabecalho_l, NULL);
+    
+    // Espaco onde guardarei os registros de modo a fazer a comparaçãok
+    dados_veiculo *dados_v = (dados_veiculo*) malloc(sizeof(dados_veiculo));
+    dados_linha *dados_l = (dados_linha*) malloc(sizeof(dados_linha));
+
+    // Recebe os primeiros registros
+    fread(&dados_v->removido, sizeof(char), 1, fp_ord_v);
+    fread(&dados_v->tamanhoRegistro, sizeof(int), 1, fp_ord_v);
+    recebe_dados_veiculo(fp_ord_v, dados_v);
+
+    fread(&dados_l->removido, sizeof(char), 1, fp_ord_l);
+    fread(&dados_l->tamanhoRegistro, sizeof(int), 1, fp_ord_l);
+    recebe_dados_linha(fp_ord_l, dados_l);
 
     // Merge dos arquivos
-    //merge(fp_ord_v, fp_ord_l, cabecalho_v, cabecalho_l);
+    bool existe_registro = false;
+    while(!feof(fp_ord_v) && !feof(fp_ord_l)){
 
+        // Se codLinha veiculo for maior que o da linha, pulo para o proximo reg no arquivo de linha e o recebo
+        if(dados_v->codLinha > dados_l->codLinha){
+
+            fread(&dados_l->removido, sizeof(char), 1, fp_ord_l);
+            fread(&dados_l->tamanhoRegistro, sizeof(int), 1, fp_ord_l);
+            recebe_dados_linha(fp_ord_l, dados_l);
+        }
+
+        // Se forem iguais, imprimo os registros e recebo o proximo veiculo
+        if(dados_v->codLinha == dados_l->codLinha){
+
+            existe_registro = true;
+            printa_veiculo(dados_v, cabecalho_v);
+            printa_linha(dados_l, cabecalho_l);
+
+            fread(&dados_v->removido, sizeof(char), 1, fp_ord_v);
+            fread(&dados_v->tamanhoRegistro, sizeof(int), 1, fp_ord_v);
+            recebe_dados_veiculo(fp_ord_v, dados_v);
+        }
+
+        // Se codLinha veiculo for menor que o da linha, pulo para o proximo reg no arquivo de veiculo e o recebo
+        if(dados_v->codLinha < dados_l->codLinha){
+
+            fread(&dados_v->removido, sizeof(char), 1, fp_ord_v);
+            fread(&dados_v->tamanhoRegistro, sizeof(int), 1, fp_ord_v);
+            recebe_dados_veiculo(fp_ord_v, dados_v);
+        }
+
+    }
+
+    if(!existe_registro) printf("Registro inexistente.\n");
+    
+    free(dados_v);
+    free(dados_l);
     free(cabecalho_l);
     free(cabecalho_v);
     fclose(fp_ord_v);

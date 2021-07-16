@@ -25,7 +25,7 @@ void ordena_arquivo(FILE *fp_ord, FILE *fp_des, int tipo, cabecalho_linha *cabec
         dados_ram[0] = (dados_veiculo*) malloc(sizeof(dados_veiculo));
 
         // (i) Passa para a RAM todo o arquivo de dados desordenado
-        for(int i = 0; i < cabecalho_v->nroRegistros; i++) {
+        for(int i = 0 ; i < cabecalho_v->nroRegistros ; i++) {
 
             fread(&dados_ram[i]->removido, sizeof(char), 1, fp_des);
             fread(&dados_ram[i]->tamanhoRegistro, sizeof(int), 1, fp_des);
@@ -38,7 +38,7 @@ void ordena_arquivo(FILE *fp_ord, FILE *fp_des, int tipo, cabecalho_linha *cabec
 
             else {
                 recebe_dados_veiculo(fp_des, dados_ram[i]);
-                dados_ram[i+1] = (dados_veiculo*) malloc(sizeof(dados_veiculo));
+                if(i != cabecalho_v->nroRegistros-1) dados_ram[i+1] = (dados_veiculo*) malloc(sizeof(dados_veiculo));
             }
 
         }
@@ -54,12 +54,11 @@ void ordena_arquivo(FILE *fp_ord, FILE *fp_des, int tipo, cabecalho_linha *cabec
             escreve_dados_veiculo(fp_ord, dados_ram[i]);
             free(dados_ram[i]);
         }
+        free(dados_ram);
 
         cabecalho_v->nroRegRemovidos = 0;
         cabecalho_v->byteProxReg = ftell(fp_ord);
         escreve_cabecalho_veiculo(fp_ord, *cabecalho_v);
-
-        free(dados_ram);
     }
 
     // Se quisermos ordenar um arquivo do tipo linha
@@ -70,7 +69,7 @@ void ordena_arquivo(FILE *fp_ord, FILE *fp_des, int tipo, cabecalho_linha *cabec
         dados_ram[0] = (dados_linha*) malloc(sizeof(dados_linha));
 
         // (i) Passa para a RAM todo o arquivo de dados desordenado
-        for(int i = 0; i < cabecalho_l->nroRegistros; i++) {
+        for(int i = 0 ; i < cabecalho_l->nroRegistros ; i++) {
 
             fread(&dados_ram[i]->removido, sizeof(char), 1, fp_des);
             fread(&dados_ram[i]->tamanhoRegistro, sizeof(int), 1, fp_des);
@@ -83,7 +82,7 @@ void ordena_arquivo(FILE *fp_ord, FILE *fp_des, int tipo, cabecalho_linha *cabec
 
             else {
                 recebe_dados_linha(fp_des, dados_ram[i]);
-                dados_ram[i+1] = (dados_linha*) malloc(sizeof(dados_linha));
+                if(i != cabecalho_l->nroRegistros-1) dados_ram[i+1] = (dados_linha*) malloc(sizeof(dados_linha));
             }
         }
         fclose(fp_des);
@@ -98,17 +97,12 @@ void ordena_arquivo(FILE *fp_ord, FILE *fp_des, int tipo, cabecalho_linha *cabec
             escreve_dados_linha(fp_ord, dados_ram[i]);
             free(dados_ram[i]);
         }
+        free(dados_ram);
 
         cabecalho_l->nroRegRemovidos = 0;
         cabecalho_l->byteProxReg = ftell(fp_ord);
         escreve_cabecalho_linha(fp_ord, *cabecalho_l);
-
-        free(dados_ram);
     }
     
-}
-
-/*void merge_arquivos(FILE *fp_ord_v, FILE *fp_ord_l, cabecalho_veiculo *cabecalho_v, cabecalho_linha* cabecalho_l) {
 
 }
-*/
