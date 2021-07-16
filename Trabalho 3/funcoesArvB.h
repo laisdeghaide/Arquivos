@@ -14,6 +14,6 @@ no_arvB* le_no_arvore(FILE *fp_index, int RRN);
 no_arvB* cria_no();
 
 int busca_recursiva(int RRN, int *byteoffset_encontrado, int chave, FILE *fp_index);
-void busca_dados_indice(FILE *fp_bin, FILE *fp_index, dados_veiculo *dados, int *existe_reg, cabecalho_veiculo *cabecalho_v, cabecalho_linha *cabecalho_l, cabecalho_arvB *cabecalho);
+int busca_dados_indice(FILE *fp_bin, FILE *fp_index, dados_veiculo *dados, cabecalho_veiculo *cabecalho_v, cabecalho_linha *cabecalho_l, cabecalho_arvB *cabecalho);
 
 #endif

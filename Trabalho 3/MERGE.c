@@ -19,7 +19,8 @@ void MERGE() {
 
     cabecalho_veiculo *cabecalho_v = le_cabecalho_veiculo(fp_v);
     cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_l);
-        
+
+    // Se houver inconsistência em algum arquivo, encerra    
     if(cabecalho_v->nroRegistros == 0 || cabecalho_l->nroRegistros == 0) {
         printf("Registro Inexistente.\n");
         free(cabecalho_l);
@@ -27,6 +28,7 @@ void MERGE() {
         return;
     }
 
+    // Se não houver registros em algum arquivo, encerra
     if(cabecalho_v->status == '0' || cabecalho_l->status == '0') {
         printf("Falha no processamento do arquivo.\n");
         free(cabecalho_l);
@@ -58,17 +60,19 @@ void MERGE() {
 
     // Merge dos arquivos
     bool existe_registro = false;
-    while(!feof(fp_ord_v) && !feof(fp_ord_l)){
+    int n1 = 0, n2 = 0;
+    while(n1 < cabecalho_v->nroRegistros && n2 < cabecalho_l->nroRegistros){
 
-        // Se codLinha veiculo for maior que o da linha, pulo para o proximo reg no arquivo de linha e o recebo
+        // Se codLinha veiculo for maior que o da linha, pulamos para o proximo reg no arquivo de linha e o recebemos
         if(dados_v->codLinha > dados_l->codLinha){
 
             fread(&dados_l->removido, sizeof(char), 1, fp_ord_l);
             fread(&dados_l->tamanhoRegistro, sizeof(int), 1, fp_ord_l);
             recebe_dados_linha(fp_ord_l, dados_l);
+            n2++;
         }
 
-        // Se forem iguais, imprimo os registros e recebo o proximo veiculo
+        // Se forem iguais, imprimimos os registros e recebo o proximo veiculo
         if(dados_v->codLinha == dados_l->codLinha){
 
             existe_registro = true;
@@ -78,16 +82,17 @@ void MERGE() {
             fread(&dados_v->removido, sizeof(char), 1, fp_ord_v);
             fread(&dados_v->tamanhoRegistro, sizeof(int), 1, fp_ord_v);
             recebe_dados_veiculo(fp_ord_v, dados_v);
+            n1++;
         }
 
-        // Se codLinha veiculo for menor que o da linha, pulo para o proximo reg no arquivo de veiculo e o recebo
+        // Se codLinha veiculo for menor que o da linha, pulamos para o proximo reg no arquivo de veiculo e o recebemos
         if(dados_v->codLinha < dados_l->codLinha){
 
             fread(&dados_v->removido, sizeof(char), 1, fp_ord_v);
             fread(&dados_v->tamanhoRegistro, sizeof(int), 1, fp_ord_v);
             recebe_dados_veiculo(fp_ord_v, dados_v);
+            n1++;
         }
-
     }
 
     if(!existe_registro) printf("Registro inexistente.\n");

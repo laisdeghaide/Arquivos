@@ -13,7 +13,6 @@ void LOOP_UNICO() {
     scanf(" %s", codLinha_l);
     scanf(" %s", indiceLinha);    
 
-
     // Checando se tem falha na abertura dos arquivos
     FILE *fp_v, *fp_l, *fp_index;
     if(!abertura_arquivo(&fp_v, nome_veiculo, "rb")) return;
@@ -24,7 +23,7 @@ void LOOP_UNICO() {
     cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_l);
     cabecalho_arvB *cabecalho_arv = le_cabecalho_arvore(fp_index);
 
-    // Checa o caso de não haver registros no arquivo de veiculo e, portanto, não terá junção
+    // Checa o caso de haver inconsistencia em algum dos arquivos e, portanto, não terá junção
     if(cabecalho_v->status == '0' || cabecalho_l->status == '0' || cabecalho_arv->status == '0') {
         printf("Falha no processamento do arquivo.\n");
         free(cabecalho_v);
@@ -33,7 +32,8 @@ void LOOP_UNICO() {
         return;
     }
 
-    if(cabecalho_v->nroRegistros == '0' || cabecalho_l->nroRegistros == 0 || cabecalho_arv->noRaiz == -1){
+    // Checa o caso de não haver registros em algum dos arquivos e, portanto, não terá junção
+    if(cabecalho_v->nroRegistros == 0 || cabecalho_l->nroRegistros == 0 || cabecalho_arv->noRaiz == -1){
         printf("Registro inexistente.\n");
         free(cabecalho_v);
         free(cabecalho_l);
@@ -42,9 +42,9 @@ void LOOP_UNICO() {
     }
 
     dados_veiculo *dados_v = (dados_veiculo*) malloc(sizeof(dados_veiculo));
-    int existe_reg = 0;
+    int existe_reg;
 
-    // Percorre registros de linha
+    // Percorre registros de veiculo
     while(fread(&dados_v->removido, sizeof(char), 1, fp_v) != 0) {
         
         fread(&dados_v->tamanhoRegistro, sizeof(int), 1, fp_v);
@@ -55,7 +55,9 @@ void LOOP_UNICO() {
         // Realiza a busca do valor passado como parâmetro no índice da árvore B
         else {
             recebe_dados_veiculo(fp_v, dados_v);
-            busca_dados_indice(fp_l, fp_index, dados_v, &existe_reg, cabecalho_v, cabecalho_l, cabecalho_arv);
+
+            // existe_reg = 1 se encontrou, 0 se não encontrou
+            existe_reg = busca_dados_indice(fp_l, fp_index, dados_v, cabecalho_v, cabecalho_l, cabecalho_arv);
         }
 
         free(dados_v->modelo);
@@ -64,6 +66,7 @@ void LOOP_UNICO() {
         dados_v->categoria = NULL;
     }
 
+    // Caso não tenha encontrado
     if(!existe_reg) printf("Registro inexistente.\n");
 
     free(fp_v);

@@ -20,6 +20,14 @@ void LOOP_ANINHADO(int c) {
     cabecalho_veiculo *cabecalho_v = le_cabecalho_veiculo(fp_v);
     cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_l);
         
+    // Checa o caso de não haver inconsistência em algum dos dois arquivos e, portanto, não terá junção
+    if(cabecalho_v->status == '0' || cabecalho_l->status == '0') {
+        printf("Falha no processamento do arquivo.\n");
+        free(cabecalho_l);
+        free(cabecalho_v);        
+        return;
+    }
+
     // Checa o caso de não haver registros em algum dos dois arquivos e, portanto, não terá junção
     if(cabecalho_v->nroRegistros == 0 || cabecalho_l->nroRegistros == 0) {
         printf("Registro Inexistente.\n");
@@ -28,14 +36,7 @@ void LOOP_ANINHADO(int c) {
         return;
     }
 
-    // Checa o caso de não haver registros em algum dos dois arquivos e, portanto, não terá junção
-    if(cabecalho_v->status == '0' || cabecalho_l->status == '0') {
-        printf("Falha no processamento do arquivo.\n");
-        free(cabecalho_l);
-        free(cabecalho_v);        
-        return;
-    }
-
+    // Aloca espaço para dados de veiculo e de linha
     dados_veiculo *dados_v = (dados_veiculo*) malloc(sizeof(dados_veiculo));
     dados_linha *dados_l = (dados_linha*) malloc(sizeof(dados_linha));
 
@@ -56,22 +57,21 @@ void LOOP_ANINHADO(int c) {
             // Percorre os registros de linha
             while(fread(&dados_l->removido, sizeof(char), 1, fp_l) != 0) {
                 
-                fread(&dados_l->tamanhoRegistro, sizeof(int), 1, fp_l);
+                fread(&dados_l->tamanhoRegistro, sizeof(int), 1, fp_l); 
 
                 //Se o registro estiver marcado como removido, pulamos ele
                 if(dados_l->removido == '0') fseek(fp_l, dados_l->tamanhoRegistro, SEEK_CUR);
 
-                // Se veiculo.codLinha = linha.codLinha, printa os dados do veiculo e depois da linha
                 else {
                     recebe_dados_linha(fp_l, dados_l);
 
+                    // Se veiculo.codLinha = linha.codLinha, printa os dados do veiculo e depois da linha
                     if(dados_v->codLinha == dados_l->codLinha) {
                         printa_veiculo(dados_v, cabecalho_v);
                         printa_linha(dados_l, cabecalho_l);
                         existe_registro = 1;
                         break;
                     }
-
                 }
 
                 free(dados_l->nomeLinha);
@@ -80,7 +80,7 @@ void LOOP_ANINHADO(int c) {
                 dados_l->corLinha = NULL;
             }
 
-            // Coloca o ponteiro do arquivo de linhas no início dos registros
+            // Reposiciona o ponteiro do arquivo de linhas no início dos registros
             fseek(fp_l, 82*sizeof(char), SEEK_SET);
         }
   
@@ -90,6 +90,7 @@ void LOOP_ANINHADO(int c) {
         dados_v->categoria = NULL;
     }
 
+    // Se não exisitir nenhum veiculo.codLinha = linha.codLinha
     if(!existe_registro) printf("Registro inexistente.\n");
 
     free(fp_l);

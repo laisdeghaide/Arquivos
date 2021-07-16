@@ -16,17 +16,20 @@ void ORDENACAO(int c) {
     if(!abertura_arquivo(&fp_des, arq_desordenado, "rb")) return;
     if(!abertura_arquivo(&fp_ord, arq_ordenado, "wb")) return;
 
+    // Se for ordenação de veículo
     if(c == 17){
 
         cabecalho_veiculo *cabecalho_v = le_cabecalho_veiculo(fp_des);
 
+        // Se houver inconsistência no arquivo, encerra
         if(cabecalho_v->status == '0') {
             printf("Falha no processamento do arquivo.\n");
             free(cabecalho_v);
             return;
         }
 
-        if(cabecalho_v->nroRegistros == 0 ) {
+        // Se não houver registros no arquivo, encerra
+        if(cabecalho_v->nroRegistros == 0) {
             printf("Registro inexistente.\n");
             free(cabecalho_v);
             return;
@@ -36,15 +39,18 @@ void ORDENACAO(int c) {
         free(cabecalho_v);
     }
 
+    // Se for ordenação de linha
     if(c == 18){
         cabecalho_linha *cabecalho_l = le_cabecalho_linha(fp_des);
 
+        // Se houver inconsistência, encerra
         if(cabecalho_l->status == '0') {
             printf("Falha no processamento do arquivo.\n");
             free(cabecalho_l);
             return;
         }
 
+        // Se não houver registros no arquivo, encerra
         if(cabecalho_l->nroRegistros == 0) {
             printf("Registro inexistente.\n");
             free(cabecalho_l);

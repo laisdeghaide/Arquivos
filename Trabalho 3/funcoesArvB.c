@@ -106,15 +106,13 @@ int busca_recursiva(int RRN, int *byteoffset, int chave, FILE *fp_index) {
 }
 
 // Função que encontra o registro que contém a chave (valor) passada
-void busca_dados_indice(FILE *fp_bin, FILE *fp_index, dados_veiculo *dados_v, int *existe_reg, cabecalho_veiculo *cabecalho_v, cabecalho_linha *cabecalho_l, cabecalho_arvB *cabecalho) {
+int busca_dados_indice(FILE *fp_bin, FILE *fp_index, dados_veiculo *dados_v, cabecalho_veiculo *cabecalho_v, cabecalho_linha *cabecalho_l, cabecalho_arvB *cabecalho) {
 
     int encontrou, byteoffset_linha = 0;
     encontrou = busca_recursiva(cabecalho->noRaiz, &byteoffset_linha, dados_v->codLinha, fp_index);
 
     // Se encontramos a chave associada ao valor passado, então
     if(encontrou) {
-
-        *existe_reg = 1;
 
         // Printa os valores do registro para o arquivo de veículos
         printa_veiculo(dados_v, cabecalho_v);
@@ -133,8 +131,9 @@ void busca_dados_indice(FILE *fp_bin, FILE *fp_index, dados_veiculo *dados_v, in
         dados->corLinha = NULL;
 
         free(dados);
-
     }
+    
+    return encontrou;
 }
 
 
