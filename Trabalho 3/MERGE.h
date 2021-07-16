@@ -12,6 +12,7 @@
 #include "funcoesOrdenacao.h"
 #include <stdbool.h>
 
+// Funcao pedida resposavel pelo merge
 void MERGE();
 
 #endif

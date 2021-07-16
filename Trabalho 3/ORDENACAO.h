@@ -12,7 +12,7 @@
 #include "funcoesFornecidas.h"
 #include "funcoesOrdenacao.h"
 
-//Funcao pedida responsável pelo loop aninhado
+//Funcao pedida responsável pelo sort
 void ORDENACAO(int c);
 
 #endif

@@ -10,7 +10,7 @@
 #include "funcoesArvB.h"
 #include "arvB.h"
 
-//Funcao pedida responsável pelo loop aninhado
+//Funcao pedida responsável pelo loop unico
 void LOOP_UNICO();
 
 #endif
