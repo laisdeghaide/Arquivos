@@ -44,7 +44,7 @@ void MERGE() {
     ordena_arquivo(fp_ord_l, fp_l, 18, cabecalho_l, NULL);
 
     // Merge dos arquivos
-    //-----
+    //merge(fp_ord_v, fp_ord_l, cabecalho_v, cabecalho_l);
 
     free(cabecalho_l);
     free(cabecalho_v);
