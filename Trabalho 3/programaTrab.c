@@ -5,7 +5,7 @@
 #include "LOOP_ANINHADO.h"
 #include "LOOP_UNICO.h"
 #include "ORDENACAO.h"
-#include "MERGE.c"
+#include "MERGE.h"
 
 int main() {
 
